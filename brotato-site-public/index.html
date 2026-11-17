@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brotato Character Guides</title>
+<meta name="description" content="Unofficial Brotato fan guide: all 74 characters ranked for solo Danger 5, with melee and ranged builds, weapon progressions and item tier lists.">
+<meta property="og:title" content="Brotato Character Guides">
+<meta property="og:description" content="Every Brotato character ranked for Danger 5, with builds, weapon progressions and item tier lists.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Design: "loot drop" arena UI. Tier ladder coloured like item rarity (S legendary ... D common),
+   chunky outlined panels with hard drop shadows, buttons that press down. See DESIGN.md. */
+:root{
+  --bg:#f3e9d2; --surface:#fffaf0; --ink:#231c12; --muted:#6b5d45; --line:#dccca8;
+  --edge:#231c12; --shadow:#231c12; --dot:rgba(35,28,18,.09); --title-shadow:#e8c77a; --letter-shadow:rgba(0,0,0,.3);
+  --accent:#8a5600; --on-accent:#ffffff; --accent-soft:#f6e2b0; --danger:#b3261e;
+  --tS:#b35400; --tA:#7b3fc4; --tB:#2363b0; --tC:#2c7a37; --tD:#5b5f66; --on-tier:#ffffff;
+  --display:"Lilita One","Figtree",system-ui,sans-serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14110d; --surface:#201a13; --ink:#f4ead8; --muted:#b3a58c; --line:#3a3127;
+    --edge:#4a3d2c; --shadow:#000000; --dot:rgba(244,234,216,.06); --title-shadow:#000000; --letter-shadow:transparent;
+    --accent:#f2b632; --on-accent:#14110d; --accent-soft:#3d2f12; --danger:#ff6b5e;
+    --tS:#ffa63d; --tA:#c08cff; --tB:#6fb0ff; --tC:#7fd67f; --tD:#b8bcc4; --on-tier:#14110d; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14110d; --surface:#201a13; --ink:#f4ead8; --muted:#b3a58c; --line:#3a3127;
+  --edge:#4a3d2c; --shadow:#000000; --dot:rgba(244,234,216,.06); --title-shadow:#000000; --letter-shadow:transparent;
+  --accent:#f2b632; --on-accent:#14110d; --accent-soft:#3d2f12; --danger:#ff6b5e;
+  --tS:#ffa63d; --tA:#c08cff; --tB:#6fb0ff; --tC:#7fd67f; --tD:#b8bcc4; --on-tier:#14110d; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background-color:var(--bg);background-image:radial-gradient(var(--dot) 1.5px,transparent 1.6px);background-size:24px 24px;color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 16px 64px}
+header.top{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,6vw,3.2rem);line-height:1;letter-spacing:.01em;margin:0;text-wrap:balance;text-shadow:0 3px 0 var(--title-shadow)}
+h1 a{color:inherit;text-decoration:none}
+.sub{color:var(--muted);margin:0;max-width:62ch}
+h2{font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.1;letter-spacing:.01em;margin:0 0 10px;text-wrap:balance}
+h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:700}
+a{color:var(--accent)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+[tabindex="-1"]:focus{outline:none}
+
+/* Chunky panel: 2px outline + hard drop shadow. Shared by tiers, cards, hero, note, flag. */
+.tier,.card,.hero,.note,.empty-all,.flag{border:2px solid var(--edge);border-radius:12px;box-shadow:0 4px 0 var(--shadow)}
+
+/* Game button: outlined, sits on a hard shadow, lifts on hover, presses down on click. */
+.seg button,.chip,.empty-all button{border:2px solid var(--edge);box-shadow:0 3px 0 var(--shadow);cursor:pointer;transition:transform .12s,box-shadow .12s,border-color .12s,background-color .12s}
+.seg button:hover,.chip:hover,.empty-all button:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--shadow)}
+.seg button:active,.chip:active,.empty-all button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--shadow)}
+
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:20px}
+.search{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.search label{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.controls input{min-height:44px;padding:10px 12px;border:2px solid var(--edge);border-radius:10px;background:var(--surface);box-shadow:inset 0 2px 0 var(--line)}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.seg button{min-height:44px;min-width:44px;padding:8px 14px;background:var(--surface);border-radius:10px;font-family:var(--display);font-size:1rem;letter-spacing:.02em}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+
+.tier{display:grid;grid-template-columns:72px minmax(0,1fr);background:var(--surface);overflow:hidden;margin-bottom:14px}
+.tier .letter{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--display);font-size:2.6rem;line-height:1;color:var(--on-tier);text-shadow:0 3px 0 var(--letter-shadow);padding:12px 0;border-right:2px solid var(--edge)}
+.tier .letter small{font-family:var(--body);font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;line-height:1.2;text-align:center;padding:0 4px;text-shadow:none}
+.tier .chips{display:flex;flex-wrap:wrap;gap:10px;padding:14px}
+.chip{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:44px;max-width:100%;padding:7px 12px 7px 8px;border-radius:10px;background:var(--bg);text-decoration:none;color:var(--ink);font-weight:700}
+.chip:hover{border-color:var(--accent)}
+.chip .rk{font-variant-numeric:tabular-nums;font-size:.75rem;color:var(--muted);min-width:1.6em;text-align:right}
+.tag{font-size:.75rem;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:6px;border:1.5px solid var(--muted);color:var(--muted);white-space:nowrap}
+.tag.early{border-color:var(--accent);color:var(--accent)}
+.empty-all{background:var(--surface);padding:16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.empty-all p{margin:0;flex:1 1 220px}
+.empty-all button{min-height:44px;padding:8px 16px;background:var(--accent);color:var(--on-accent);border-radius:10px;font-family:var(--display);font-size:1rem;letter-spacing:.02em}
+.bS{background:var(--tS)}.bA{background:var(--tA)}.bB{background:var(--tB)}.bC{background:var(--tC)}.bD{background:var(--tD)}
+
+.note{background:var(--surface);padding:18px;margin-top:28px}
+.note p{margin:0 0 10px;max-width:70ch}
+.note ul{margin:0;padding-left:20px}
+
+.guide{display:flex;flex-direction:column;gap:18px}
+.crumbs{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:space-between;font-weight:700}
+.crumbs span{display:flex;flex-wrap:wrap;align-items:center;gap:0 4px}
+.crumbs a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;text-underline-offset:3px}
+.crumbs a:hover{text-decoration:underline}
+.hero{background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:12px}
+.hero .line{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.hero h2{font-size:clamp(2rem,6vw,2.8rem);margin:0;text-shadow:0 3px 0 var(--title-shadow)}
+.pill{font-family:var(--display);font-size:1.1rem;letter-spacing:.02em;color:var(--on-tier);padding:3px 12px;border:2px solid var(--edge);border-radius:8px;box-shadow:0 2px 0 var(--shadow)}
+.hero p{margin:0;max-width:68ch}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.card{background:var(--surface);padding:18px}
+.card p{margin:0;max-width:68ch}
+.card ul{margin:0;padding-left:18px}
+.card li{margin:2px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:10px 0 0}
+.kv dt{color:var(--muted);font-weight:700}
+.kv dd{margin:0}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{text-align:left;vertical-align:top;padding:10px;border-top:2px solid var(--line)}
+thead th{border-top:0;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.card.avoid{border-left:8px solid var(--danger)}
+.flag{background:var(--accent-soft);border-color:var(--accent);padding:12px 16px}
+.fgroup{display:flex;flex-direction:column;gap:4px}
+.flabel{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.builds{display:flex;flex-direction:column;gap:12px}
+.builds h3{margin:0}
+.builds .seg button{display:flex;flex-direction:column;align-items:flex-start;gap:0;line-height:1.15;padding:8px 14px;text-align:left}
+.kdot{font-family:var(--body);font-size:.75rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:inherit}
+.bpanel{border-top:2px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:10px}
+.bpanel p{margin:0}
+.bhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.bhead h4{font-family:var(--display);font-weight:400;font-size:1.4rem;line-height:1.1;margin:0}
+.bstart{font-size:1.05rem}
+.bstart span{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bstart strong{color:var(--accent)}
+.bstart .vnote{display:block;margin-top:2px;font-size:.8rem;letter-spacing:0;text-transform:none;font-weight:600;color:var(--muted)}
+.tag.kind-m{border-color:var(--tS);color:var(--ink)}
+.tag.kind-r{border-color:var(--tB);color:var(--ink)}
+.small{font-size:.875rem}
+.ithead{font-family:var(--display);font-weight:400;font-size:1.15rem;margin:6px 0 0}
+.itiers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.itiers li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:start}
+.iletter{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:2px solid var(--edge);border-radius:8px;box-shadow:0 2px 0 var(--shadow);font-family:var(--display);font-size:1.5rem;color:var(--on-tier)}
+.inote{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.ilist{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.witems .ilist{margin-top:0}
+.has-tip{cursor:help;text-decoration:underline dotted;text-decoration-color:var(--muted);text-underline-offset:3px}
+.has-tip:hover,.has-tip:focus-visible{border-color:var(--accent)}
+.tip{position:fixed;z-index:100;max-width:min(260px,calc(100vw - 16px));padding:8px 12px;background:var(--surface);color:var(--ink);border:2px solid var(--edge);border-radius:10px;box-shadow:0 3px 0 var(--shadow);font-size:.875rem;font-weight:600;line-height:1.35;pointer-events:none;white-space:pre-line}
+.tip[hidden]{display:none}
+.wstats .item{background:var(--surface);border-color:var(--accent)}
+.bX{background:var(--danger);font-size:1.8rem;line-height:1}
+.iavoid .item{border-color:var(--danger)}
+.iavoid .inote{color:var(--danger)}
+.deep{display:flex;flex-direction:column;gap:10px}
+.deep h3{margin:0}
+.deep>p{margin:0;max-width:68ch}
+.deep details{border-top:2px solid var(--line)}
+.deep summary{min-height:44px;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:var(--display);font-size:1.15rem;list-style:none}
+.deep summary::-webkit-details-marker{display:none}
+.deep summary::before{content:"+";display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:2px solid var(--edge);border-radius:6px;font-family:var(--body);font-weight:700}
+.deep details[open]>summary::before{content:"\2212"}
+.deep summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.deep .dbody{display:flex;flex-direction:column;gap:10px;padding:0 0 14px}
+.deep .dbody p,.deep .dbody ul{margin:0;max-width:70ch}
+.deep .dbody ul{padding-left:18px}
+.deep td.dname{font-weight:700;white-space:nowrap}
+.dsrc{font-size:.875rem}
+.dsrc a{display:inline-block;padding:2px 0}
+.foot{margin-top:32px;padding:16px 0 8px;border-top:2px solid var(--line);color:var(--muted);font-size:.875rem}
+.foot p{margin:0 0 6px;max-width:75ch}
+.item{padding:3px 8px;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);font-weight:600;font-size:.9rem}
+@media (max-width:480px){.tier{grid-template-columns:52px minmax(0,1fr)}.tier .letter{font-size:1.9rem}.tier .letter small{font-size:.75rem;letter-spacing:0}}
+@media (max-width:600px){
+  table{min-width:0}
+  thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+  table,tbody,tr,th,td{display:block}
+  tbody tr{border-top:2px solid var(--line);padding:10px 0}
+  tbody tr:first-child{border-top:0;padding-top:0}
+  tbody th,tbody td{border:0;padding:2px 0}
+  tbody th::before{content:"Waves "}
+  td::before{content:attr(data-label) ": ";font-weight:700;color:var(--muted)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}.seg button:hover,.chip:hover,.empty-all button:hover,.seg button:active,.chip:active,.empty-all button:active{transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 tabindex="-1"><a href="#tiers">Brotato Character Guides</a></h1>
+    <p class="sub" id="sub"></p>
+  </header>
+  <main id="app"></main>
+  <footer class="foot">
+    <p><strong>Unofficial fan guide.</strong> Not affiliated with or endorsed by Blobfish, the developer of Brotato. Brotato and its content belong to their owners.</p>
+    <p>Item, weapon and unlock data comes from the community wikis (<a href="https://brotato.wiki.spellsandguns.com/" rel="noopener">brotato.wiki.spellsandguns.com</a>, <a href="https://brotato.wiki.fextralife.com/" rel="noopener">brotato.wiki.fextralife.com</a>). Rankings, builds and ratings are this site&rsquo;s own recommendations.</p>
+  </footer>
+</div>
+<script src="guides.js"></script>
+<script src="builds.js"></script>
+<script src="items.js"></script>
+<script src="unlocks.js"></script>
+<script src="pools.js"></script>
+<script src="deep.js"></script>
+<script>
+(function(){
+  var G = window.GUIDES || [];
+  var PACK = {base:"Base game", at:"Abyssal Terrors", pd:"Primal Dread"};
+  var PTAG = {base:"BASE", at:"AT", pd:"PD"};
+  var TIERS = ["S","A","B","C","D"];
+  var TNOTE = {S:"Best",A:"Strong",B:"Solid",C:"Needs a plan",D:"Hard mode"};
+  var app = document.getElementById("app");
+  var B = window.BUILDS || {};
+  var KIND = {m:"Melee", r:"Ranged", x:"No weapons"};
+  var state = {q:"", pack:"all", type:"all"};
+  try{ var s = JSON.parse(localStorage.getItem("brotato-filter")||"null"); if(s && s.pack) state.pack = s.pack; if(s && s.type) state.type = s.type; }catch(e){}
+  function save(){ try{ localStorage.setItem("brotato-filter", JSON.stringify({pack:state.pack, type:state.type})); }catch(e){} }
+  function builds(g){ return B[g.n] || []; }
+
+  var UN = window.UNLOCKS || {}, NAMES = {}, AT = {}, UNL = {};
+  (window.ITEM_NAMES||[]).forEach(function(n){ NAMES[n]=1; });
+  (window.AT_ITEMS||[]).forEach(function(n){ AT[n]=1; });
+  (window.UNLISTED_ITEMS||[]).forEach(function(n){ UNL[n]=1; });
+  function oneTip(base, tag){
+    if(tag==="PD" || UNL[base] || /^Fossil/.test(base)) return "Primal Dread item (needs the DLC). Unlock condition not confirmed yet.";
+    var dlc = (tag==="AT" || AT[base]) ? " Needs the Abyssal Terrors DLC." : "";
+    if(UN[base]) return "Unlock: " + UN[base] + "." + dlc;
+    return dlc ? "No challenge needed." + dlc : "Available from the start, no unlock needed.";
+  }
+  // Longest names first so "Baby Elephant" wins over shorter overlaps.
+  var ALLN = Object.keys(NAMES).concat(Object.keys(UNL)).sort(function(a,b){ return b.length-a.length; });
+  function reEsc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+  var NAME_RE = new RegExp("Fossil:[^,()]*?(?=\\s*\\(|$|,)|\\b(?:" + ALLN.map(reEsc).join("|") + ")(?:s)?\\b", "g");
+  function tipFor(text){
+    var found = [], seen = {}, m;
+    NAME_RE.lastIndex = 0;
+    while((m = NAME_RE.exec(text))){
+      var nm = m[0].replace(/s$/, function(x){ return NAMES[m[0]]||UNL[m[0]] ? x : ""; }).trim();
+      if(seen[nm]) continue; seen[nm] = 1;
+      var after = text.slice(m.index + m[0].length).match(/^\s*\((AT|PD)\b/);
+      found.push({n:nm, t:oneTip(nm, after ? after[1] : (/\(PD\)/.test(text) && /^Fossil/.test(nm) ? "PD" : ""))});
+    }
+    if(!found.length) return /^Fossils?\b/.test(text) ? oneTip("Fossil", "PD") : "";
+    if(found.length===1) return found[0].t;
+    return found.map(function(f){ return f.n + " — " + f.t; }).join("\n");
+  }
+  // Split on ", " but not inside parentheses.
+  function splitList(s){
+    var out = [], depth = 0, cur = "";
+    for(var i=0;i<s.length;i++){
+      var c = s[i];
+      if(c==="(") depth++; else if(c===")") depth = Math.max(0, depth-1);
+      if(c==="," && depth===0 && s[i+1]===" "){ out.push(cur); cur = ""; i++; continue; }
+      cur += c;
+    }
+    out.push(cur); return out;
+  }
+  function itemChip(x){
+    var t = tipFor(x);
+    return t ? '<span class="item has-tip" tabindex="0" data-tip="'+esc(t)+'" aria-describedby="tip">'+esc(x)+'</span>'
+             : '<span class="item">'+esc(x)+'</span>';
+  }
+
+  var tip = document.createElement("div");
+  tip.id = "tip"; tip.className = "tip"; tip.setAttribute("role","tooltip"); tip.hidden = true;
+  document.body.appendChild(tip);
+  var tipFor_el = null;
+  function showTip(el){
+    tipFor_el = el; tip.textContent = el.getAttribute("data-tip"); tip.hidden = false;
+    var r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+    var left = Math.min(Math.max(8, r.left + r.width/2 - tw/2), window.innerWidth - tw - 8);
+    var top = r.top - th - 8; if(top < 8) top = r.bottom + 8;
+    tip.style.left = left + "px"; tip.style.top = top + "px";
+  }
+  function hideTip(){ tip.hidden = true; tipFor_el = null; }
+  document.addEventListener("mouseover", function(e){ var el = e.target.closest && e.target.closest(".has-tip"); if(el) showTip(el); });
+  document.addEventListener("mouseout", function(e){ var el = e.target.closest && e.target.closest(".has-tip"); if(el && document.activeElement!==el) hideTip(); });
+  document.addEventListener("focusin", function(e){ if(e.target.classList && e.target.classList.contains("has-tip")) showTip(e.target); });
+  document.addEventListener("focusout", function(e){ if(e.target.classList && e.target.classList.contains("has-tip")) hideTip(); });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape" && !tip.hidden) hideTip(); });
+  window.addEventListener("scroll", function(){ if(!tip.hidden && tipFor_el) showTip(tipFor_el); }, {passive:true});
+  window.addEventListener("resize", function(){ if(!tip.hidden && tipFor_el) showTip(tipFor_el); });
+  window.addEventListener("hashchange", hideTip);
+  function firstOfType(g){ var bs = builds(g); for(var i=0;i<bs.length;i++){ if(bs[i].k===state.type) return i; } return 0; }
+
+  function slug(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,"-"); }
+  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  G.forEach(function(g,i){ g.rank = i+1; g.slug = slug(g.n); });
+  document.getElementById("sub").textContent = G.length + " characters ranked strongest to weakest for solo Danger 5, with a build guide for each. Covers the base game, Abyssal Terrors and Primal Dread (update 1.2).";
+
+  function renderTiers(){
+    var h = '<div class="controls">'
+      + '<div class="search"><label for="q">Find a character</label><input id="q" type="search" placeholder="e.g. Brawler" autocomplete="off" value="'+esc(state.q)+'"></div>'
+      + '<div class="fgroup"><span class="flabel" id="lbl-type">Build type</span><div class="seg" role="group" aria-labelledby="lbl-type">'
+      + [["all","Any"],["m","Melee"],["r","Ranged"]].map(function(p){
+          return '<button type="button" data-type="'+p[0]+'" aria-pressed="'+(state.type===p[0])+'">'+p[1]+'</button>'; }).join("")
+      + '</div></div>'
+      + '<div class="fgroup"><span class="flabel" id="lbl-pack">Content</span><div class="seg" role="group" aria-labelledby="lbl-pack">'
+      + [["all","All"],["base","Base game"],["at","Abyssal Terrors"],["pd","Primal Dread"]].map(function(p){
+          return '<button type="button" data-pack="'+p[0]+'" aria-pressed="'+(state.pack===p[0])+'">'+p[1]+'</button>'; }).join("")
+      + '</div></div></div><p id="status" class="sr-only" role="status" aria-live="polite"></p><div id="rows"></div>'
+      + '<section class="note"><h2>How this ranking was made</h2>'
+      + '<p>There is no agreed Brotato tier list. Published lists disagree sharply (One Armed, Masochist, Cryptid and Doctor each appear at both ends), so this ranking is a blend of five published lists weighted toward consistency on Danger 5, plus judgment where they split. Read a tier as a rough band.</p>'
+      + '<p>Characters marked EARLY are from Primal Dread, released November 2, 2026. Their ratings and builds rest on launch-week guides and are the least tested part of this site. Stats in guides are condensed from the wiki; check in-game tooltips for exact wording.</p>'
+      + '<ul><li><a href="https://brotato-builds.com/tierlist">brotato-builds.com tier list</a></li>'
+      + '<li><a href="https://grindnstrat.com/brotato-tier-list/">Grind N Strat Primal Dread tier list</a></li>'
+      + '<li><a href="https://brotato.wiki.fextralife.com/Brotato_Tier_List">Fextralife tier list</a></li>'
+      + '<li><a href="https://choostgames.com/blog/brotato-tier-list/">Choost Games tier list</a></li>'
+      + '<li><a href="https://rogueranker.com/brotato-tier-list/">RogueRanker tier list</a></li>'
+      + '<li><a href="https://brotato.app/characters/">brotato.app character stats</a> and <a href="https://brotato.wiki.spellsandguns.com/Characters">Brotato Wiki characters</a></li>'
+      + '<li><a href="https://www.brotatoprimaldread-wiki.wiki/en/skills/brotato-primal-dread/brotato-primal-dread-character-unlocks">Primal Dread character stats and unlocks</a></li></ul></section>';
+    app.innerHTML = h;
+    var q = document.getElementById("q");
+    q.addEventListener("input", function(){ state.q = q.value; rows(); });
+    app.querySelectorAll("[data-pack]").forEach(function(b){
+      b.addEventListener("click", function(){
+        state.pack = b.getAttribute("data-pack"); save();
+        app.querySelectorAll("[data-pack]").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+        rows();
+      });
+    });
+    app.querySelectorAll("[data-type]").forEach(function(b){
+      b.addEventListener("click", function(){
+        state.type = b.getAttribute("data-type"); save();
+        app.querySelectorAll("[data-type]").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+        rows();
+      });
+    });
+    rows();
+  }
+
+  function rows(){
+    var q = state.q.trim().toLowerCase();
+    var filtering = !!q || state.pack!=="all" || state.type!=="all";
+    var total = 0;
+    var out = TIERS.map(function(t){
+      var list = G.filter(function(g){
+        return g.t===t && (state.pack==="all"||g.p===state.pack) && (!q || g.n.toLowerCase().indexOf(q)>=0)
+          && (state.type==="all" || builds(g).some(function(b){ return b.k===state.type; }));
+      });
+      total += list.length;
+      if(!list.length) return "";
+      var chips = list.map(function(g){
+        var href = '#'+g.slug + (state.type!=="all" ? '/'+(firstOfType(g)+1) : '');
+        return '<a class="chip" href="'+href+'"><span class="rk">'+g.rank+'</span>'+esc(g.n)
+          + (g.p!=="base" ? '<span class="tag">'+PTAG[g.p]+'</span>' : '')
+          + (g.early ? '<span class="tag early">EARLY</span>' : '') + '</a>';
+      }).join("");
+      return '<section class="tier" aria-label="Tier '+t+'"><div class="letter b'+t+'">'+t+'<small>'+TNOTE[t]+'</small></div><div class="chips">'+chips+'</div></section>';
+    }).join("");
+    var where = (state.type!=="all" ? ' with '+KIND[state.type].toLowerCase()+' builds' : '') + (state.pack!=="all" ? ' in '+PACK[state.pack] : '');
+    if(!total){
+      out = '<div class="empty-all"><p>No character matches '+(q ? '&ldquo;'+esc(state.q.trim())+'&rdquo;' : 'this filter')+where+'.</p>'
+        + '<button type="button" id="clear">Show all characters</button></div>';
+    }
+    var rowsEl = document.getElementById("rows");
+    rowsEl.innerHTML = out;
+    var clear = document.getElementById("clear");
+    if(clear) clear.addEventListener("click", function(){
+      state.q = ""; state.pack = "all"; state.type = "all"; save();
+      var input = document.getElementById("q"); input.value = "";
+      app.querySelectorAll("[data-pack]").forEach(function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-pack")==="all"); });
+      app.querySelectorAll("[data-type]").forEach(function(x){ x.setAttribute("aria-pressed", x.getAttribute("data-type")==="all"); });
+      rows(); input.focus();
+    });
+    document.getElementById("status").textContent = filtering
+      ? (total ? total+(total===1?' character':' characters')+' shown'+where : 'No characters match')
+      : '';
+  }
+
+  function buildPanel(g, i){
+    var b = builds(g)[i];
+    if(!b) return '<p>No build data yet.</p>';
+    function row(label, w){ return '<tr><th scope="row">'+label+'</th><td data-label="Weapons">'+esc(w)+'</td></tr>'; }
+    return '<div class="bhead"><h4>'+esc(b.n)+'</h4><span class="tag kind-'+b.k+'">'+KIND[b.k].toUpperCase()+'</span></div>'
+      + '<p class="bstart"><span>Start with</span> <strong>'+esc(b.s)+'</strong>'
+      + (b.k==="x" ? '' : ' <span class="vnote">'+(g.p==="base" ? '&#10003; Starting option confirmed (Fextralife wiki)' : 'DLC character: starting option not yet confirmed')+'</span>')+'</p>'
+      + '<p>'+esc(b.x)+'</p>'
+      + '<div class="tablewrap"><table class="wtable"><thead><tr><th>Waves</th><th>Weapons</th></tr></thead><tbody>'
+      + row("1&ndash;6", b.w[0]) + row("7&ndash;12", b.w[1]) + row("13&ndash;20", b.w[2])
+      + '</tbody></table></div>'
+      + itemTiers(g, i);
+  }
+
+  // Stat keyword -> pool. Order matters only for matching.
+  var STAT_TAGS = [["%Damage","pct"],["Melee Damage","melee"],["Ranged Damage","ranged"],["Elemental","elemental"],["Engineering","eng"],
+    ["Attack Speed","atkspd"],["Crit","crit"],["Max HP","maxhp"],["Armor","armor"],["Dodge","dodge"],["HP Regeneration","regen"],["regen","regen"],
+    ["Life Steal","lifesteal"],["Speed","speed"],["Luck","luck"],["Harvesting","econ"],["Explosion","explosions"],["Range","range"],["XP Gain","xp"]];
+  var TOP_N = 30;
+  function buildTags(g, b, avoidText){
+    var tags = [];
+    function add(t){ if(tags.indexOf(t)<0) tags.push(t); }
+    if(b.k==="m") add("melee"); else if(b.k==="r") add("ranged");
+    if(/pet/i.test(b.x+" "+b.n)) add("pets");
+    if(/explo/i.test(b.x+" "+b.n)) add("explosions");
+    [g.e[0], g.m[0], g.l[0]].join(", ").split(/,\s*/).forEach(function(s){
+      STAT_TAGS.forEach(function(p){ if(s.indexOf(p[0])>=0 && !(p[0]==="Speed" && /Attack Speed/.test(s)) && !(p[0]==="Range" && /Ranged/.test(s))) add(p[1]); });
+    });
+    ["maxhp","armor","pct"].forEach(add);
+    // Drop pools the build or character says to avoid.
+    function clean(s, k){
+      if(k==="Speed") s = s.replace(/Attack Speed/g, "");
+      if(k==="Range") s = s.replace(/Ranged|Pickup Range/g, "");
+      return s;
+    }
+    function avoided(t){
+      var kw = STAT_TAGS.filter(function(p){ return p[1]===t && p[0]!=="regen"; }).map(function(p){ return p[0]; });
+      return kw.some(function(k){
+        return clean(avoidText, k).indexOf(k)>=0
+          || new RegExp(reEsc(k)+"( items|-only| \\(|,|\\.| and )").test(clean(g.avoid, k));
+      });
+    }
+    var drop = Object.keys(window.POOLS||{}).filter(avoided);
+    return {keep: tags.filter(function(t){ return drop.indexOf(t)<0; }), drop: drop};
+  }
+  function fillItems(g, b, have, avoidText){
+    var P = window.POOLS || {}, ATs = {}; (window.POOL_AT||[]).forEach(function(n){ ATs[n]=1; });
+    var bt = buildTags(g, b, avoidText), tags = bt.keep, out = [], used = {};
+    bt.drop.forEach(function(t){ Object.keys(P[t]||{}).forEach(function(n){ used[n]=1; }); });
+    var own = b.k==="m" ? "melee" : b.k==="r" ? "ranged" : "", other = own==="melee" ? "ranged" : own==="ranged" ? "melee" : "";
+    if(other) Object.keys(P[other]||{}).forEach(function(n){ if(!(P[own]||{})[n]) used[n]=1; });
+    var lists = tags.map(function(t){ var p = P[t]||{}; return Object.keys(p).sort(function(x,y){ return p[y]-p[x]; }); });
+    var need = TOP_N - have.length;
+    for(var round=0; out.length<need && lists.some(function(l){ return l.length; }); round++){
+      for(var j=0;j<lists.length && out.length<need;j++){
+        while(lists[j].length){
+          var nm = lists[j].shift();
+          if(used[nm]) continue; used[nm]=1;
+          var re = new RegExp("\\b"+reEsc(nm)+"\\b");
+          if(have.some(function(h){ return re.test(h); }) || re.test(avoidText) || re.test(g.avoid)) continue;
+          out.push(nm + (ATs[nm] ? " (AT)" : "")); break;
+        }
+      }
+    }
+    return out;
+  }
+
+  function itemTiers(g, i){
+    var t = (window.ITEMS && window.ITEMS[g.n] && window.ITEMS[g.n][i]) || null;
+    if(!t) return '';
+    var av = (window.AVOID && window.AVOID[g.n] && window.AVOID[g.n][i]) || '';
+    var rows = t.map(splitList);
+    var have = rows[0].concat(rows[1], rows[2]);
+    var fill = fillItems(g, builds(g)[i], have, av);
+    var cut = Math.ceil(fill.length * 0.4);
+    rows[2] = rows[2].concat(fill.slice(0, cut));
+    rows[3] = fill.slice(cut);
+    var label = {S:"Buy on sight", A:"Strong pick", B:"Good filler", C:"Situational"};
+    var total = have.length + fill.length;
+    return '<h4 class="ithead">Item tier list &middot; top '+total+'</h4><ul class="itiers">'
+      + ["S","A","B","C"].map(function(k, j){
+          if(!rows[j] || !rows[j].length) return '';
+          return '<li><span class="iletter b'+k+'" aria-hidden="true">'+k+'</span><div><span class="sr-only">Tier '+k+': </span><span class="inote">'+label[k]+'</span>'
+            + '<span class="ilist">'+rows[j].map(itemChip).join("")+'</span></div></li>';
+        }).join("")
+      + (av ? '<li class="iavoid"><span class="iletter bX" aria-hidden="true">&times;</span><div><span class="sr-only">Avoid: </span><span class="inote">Avoid</span>'
+          + '<span class="ilist">'+splitList(av).map(itemChip).join("")+'</span></div></li>' : '')
+      + '</ul>';
+  }
+
+  function buildsSection(g, i){
+    var bs = builds(g);
+    if(!bs.length) return '';
+    return '<section class="card builds"><h3 id="lbl-builds">Builds &middot; '+bs.length+' viable</h3>'
+      + '<div class="seg" role="group" aria-labelledby="lbl-builds">'
+      + bs.map(function(b, j){ return '<button type="button" data-build="'+j+'" aria-pressed="'+(j===i)+'" aria-controls="bpanel">'+esc(b.n)+' <span class="kdot">'+KIND[b.k]+'</span></button>'; }).join("")
+      + '</div><div id="bpanel" class="bpanel" aria-live="polite">'+buildPanel(g, i)+'</div>'
+      + '<p class="sub small">Weapon progressions and item tiers are recommendations; shops vary run to run. Tiers S and A are hand-picked; the rest of the top 30 are matched to this build&rsquo;s stat priorities using the wiki&rsquo;s item effects.</p></section>';
+  }
+
+  function deepSection(g){
+    var d = (window.DEEP || {})[g.n];
+    if(!d) return "";
+    var h = '<section class="card deep"><h3>Deep dive</h3><p>'+esc(d.lead)+'</p>';
+    d.sections.forEach(function(s){
+      h += '<details><summary>'+esc(s.h)+'</summary><div class="dbody">' + (s.p ? '<p>'+esc(s.p)+'</p>' : '');
+      if(s.rows){
+        h += '<div class="tablewrap"><table><thead><tr>' + s.head.map(function(c){ return '<th scope="col">'+esc(c)+'</th>'; }).join("") + '</tr></thead><tbody>'
+          + s.rows.map(function(r){ return '<tr>' + r.map(function(c, k){
+              var name = (s.head[0]==="Tier" ? k===1 : k===0);
+              var cell = name ? '<span class="ilist">'+itemChip(c)+'</span>' : esc(c);
+              return '<td data-label="'+esc(s.head[k])+'"'+(name?' class="dname"':'')+'>'+cell+'</td>'; }).join("") + '</tr>'; }).join("")
+          + '</tbody></table></div>';
+      }
+      if(s.notes) h += '<ul>' + s.notes.map(function(n){ return '<li>'+esc(n)+'</li>'; }).join("") + '</ul>';
+      h += '</div></details>';
+    });
+    h += '<details><summary>Sources</summary><div class="dbody"><p class="dsrc">' + d.sources.map(function(x){ return '<a href="'+esc(x[1])+'" rel="noopener">'+esc(x[0])+'</a>'; }).join(" &middot; ")
+      + '</p><p class="small">Character and base-game weapon numbers are from the wiki. Item, fossil and pet ratings are this site&rsquo;s synthesis of these sources and the character&rsquo;s kit, not a published community ranking.</p></div></details>';
+    return h + '</section>';
+  }
+
+  function renderGuide(g, bi){
+    var prev = G[g.rank-2], next = G[g.rank];
+    var nb = builds(g).length;
+    if(!(bi>=0 && bi<nb)) bi = 0;
+    function chips(s, items){ return '<span class="ilist">' + splitList(s).map(function(x){ return items ? itemChip(x) : '<span class="item">'+esc(x)+'</span>'; }).join("") + '</span>'; }
+    function phase(label, arr){ return '<tr><th scope="row">'+label+'</th><td data-label="Stats" class="witems wstats">'+chips(arr[0])+'</td><td data-label="Items" class="witems">'+chips(arr[1], true)+'</td></tr>'; }
+    var h = '<article class="guide">'
+      + '<nav class="crumbs"><a href="#tiers">&larr; Tier list</a><span>'
+      + (prev ? '<a href="#'+prev.slug+'">&larr; #'+prev.rank+' '+esc(prev.n)+'</a>' : '')
+      + (prev&&next ? ' &nbsp;·&nbsp; ' : '')
+      + (next ? '<a href="#'+next.slug+'">#'+next.rank+' '+esc(next.n)+' &rarr;</a>' : '') + '</span></nav>'
+      + '<section class="hero"><div class="line"><h2 id="guide-title" tabindex="-1">'+esc(g.n)+'</h2><span class="pill b'+g.t+'">'+g.t+' tier</span>'
+      + '<span class="tag">RANK '+g.rank+' OF '+G.length+'</span><span class="tag">'+PACK[g.p].toUpperCase()+'</span></div>'
+      + '<p>'+esc(g.why)+'</p></section>'
+      + (g.early ? '<div class="flag"><strong>Early rating.</strong> Primal Dread launched November 2, 2026. This build comes from launch-week guides and the character&rsquo;s kit, not from long-tested runs.</div>' : '')
+      + buildsSection(g, bi)
+      + '<div class="grid2"><section class="card"><h3>Traits</h3><ul>'+g.traits.map(function(t){return '<li>'+esc(t)+'</li>';}).join("")+'</ul>'
+      + '<dl class="kv"><dt>Unlock</dt><dd>'+esc(g.u)+'</dd>'+(g.r?'<dt>Win reward</dt><dd>'+esc(g.r)+'</dd>':'')+'</dl></section>'
+      + '<section class="card"><h3>How to play</h3><p>'+esc(g.play)+'</p></section></div>'
+      + '<section class="card"><h3>What to prioritize by wave</h3><div class="tablewrap"><table><thead><tr><th>Waves</th><th>Stats</th><th>Items</th></tr></thead><tbody>'
+      + phase("1&ndash;6", g.e) + phase("7&ndash;12", g.m) + phase("13&ndash;20", g.l)
+      + '</tbody></table></div></section>'
+      + '<section class="card avoid"><h3>Avoid</h3><p>'+esc(g.avoid)+'</p></section>'
+      + deepSection(g)
+      + '<p class="sub">(AT) marks Abyssal Terrors items and (PD) Primal Dread items. Skip them if you don&rsquo;t own that DLC.</p>'
+      + '</article>';
+    app.innerHTML = h;
+    app.querySelectorAll("[data-build]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var j = +btn.getAttribute("data-build");
+        app.querySelectorAll("[data-build]").forEach(function(x){ x.setAttribute("aria-pressed", x===btn); });
+        document.getElementById("bpanel").innerHTML = buildPanel(g, j);
+        try{ history.replaceState(null, "", "#"+g.slug+(j ? "/"+(j+1) : "")); }catch(e){}
+      });
+    });
+    window.scrollTo(0,0);
+  }
+
+  function route(){
+    var parts = (location.hash||"").replace(/^#/,"").split("/");
+    var id = parts[0], bi = parts[1] ? parseInt(parts[1],10)-1 : 0;
+    var g = G.filter(function(x){return x.slug===id;})[0];
+    if(g){
+      renderGuide(g, bi);
+      document.title = g.n + " build guide · Brotato Character Guides";
+      if(!first) document.getElementById("guide-title").focus();
+    } else {
+      renderTiers();
+      document.title = "Brotato Character Guides";
+      if(!first) document.querySelector("h1").focus({preventScroll:true});
+    }
+    first = false;
+  }
+  var first = true;
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+</body>
+</html>
