@@ -1,8 +1,10 @@
 // Items grouped by the stat they mainly give, used to fill each build's item tier list to 30.
 // Source: brotato.wiki.spellsandguns.com/Items effects (v1.1.15.4), fetched 2026-11-16.
-// Number = item rarity tier (4 = Tier IV). Items with a big drawback on the wiki are left out.
+// Number = item rarity tier (4 = Tier IV). Items with a big drawback on the wiki are left out,
+// including every item that adds Curse (the site advises keeping Curse low on Danger 5).
+// Which items need Abyssal Terrors comes from AT_ITEMS in unlocks.js.
 window.POOLS = {
-pct:{"Ashes":4,"Heavy Bullets":4,"Lantern":4,"Potato":4,"Spider":4,"Coil":3,"Power Generator":3,"Silver Bullet":3,"Vigilante Ring":3,"Cauldron":2,"Medal":2,"Missile":2,"Pearl":2,"Ritual":2,"Corrupted Shard":1,"Gentle Alien":1,"Injection":1,"Small Fish":1},
+pct:{"Ashes":4,"Heavy Bullets":4,"Lantern":4,"Potato":4,"Spider":4,"Coil":3,"Power Generator":3,"Silver Bullet":3,"Vigilante Ring":3,"Cauldron":2,"Medal":2,"Missile":2,"Pearl":2,"Ritual":2,"Gentle Alien":1,"Injection":1,"Small Fish":1},
 melee:{"Big Arms":4,"Mammoth":4,"Robot Arm":4,"Alloy":3,"Scarf":3,"Wheat":3,"Mastery":2,"Riposte":2,"Saltwater":2,"Boxing Glove":1,"Charcoal":1,"Claw Tree":1,"Defective Steroids":1,"Goat Skull":1,"Hedgehog":1},
 ranged:{"Big Arms":4,"Heavy Bullets":4,"Alloy":3,"Honey":3,"Wheat":3,"Reinforced Steel":2,"Scope":2,"Small Magazine":2,"Feather":1,"Hedgehog":1,"Lens":1,"Mutation":1},
 elemental:{"Greek Fire":4,"Wolf Helmet":4,"Alloy":3,"Candle":3,"Strange Book":3,"Will-o'-Wisp":3,"Blazemander":2,"Campfire":2,"Energy Bracelet":2,"Fuel Tank":2,"Incendiary Turret":2,"Snowball":2,"Tyler":2,"Book":1,"Boiling Water":1,"Charcoal":1,"Mutation":1,"Scared Sausage":1,"Snake":1,"Toxic Sludge":1},
@@ -22,5 +24,3 @@ range:{"Ashes":4,"Heavy Bullets":4,"Lantern":4,"Night Goggles":4,"Poisonous Toni
 xp:{"Diploma":4,"Bean Teacher":3},
 pets:{"Scapegoat":4,"Jellyshield":3,"Wandering Bot":3,"Blazemander":2,"Bonk Dog":2,"Bot-O-Mine":2,"Catling Gun":2,"Doc Moth":2,"Lootworm":1,"Ratzilla":1}
 };
-// Abyssal Terrors items in the pools (shown with "(AT)").
-window.POOL_AT = ["Ashes","Lantern","Cauldron","Pearl","Scarf","Starfish","Eyepatch","Coral","Black Flag","Seashell","Goldfish","Fish Hook"];
