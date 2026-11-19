@@ -1,4 +1,4 @@
-﻿// Item unlock data for hover tooltips.
+// Item unlock data for hover tooltips.
 // Source: brotato.wiki.spellsandguns.com/Items "Unlocked By" column (version 1.1.15.4,
 // base game + Abyssal Terrors) and /Weapons "Unlocked by" column. Fetched 2026-11-16.
 // Items on the list with no "Unlocked By" entry need no unlock.
@@ -46,3 +46,5 @@ window.ITEM_TIER = {"Acid":2,"Adrenaline":3,"Alien Baby":3,"Alien Eyes":2,"Alien
 // Other Primal Dread rarities and Jellyshield from the fandom wiki, 2026-11-17.
 Object.assign(window.ITEM_TIER, {"Bleeding Turret":1,"Boosted Mitosis":2,"Cybernetic Arm":4,"Dart Trap":1,"Dig Site":2,"Dino Egg":3,"Eldritch Figurine":2,"Evolved Leap":2,"Exothermic Reaction":3,"Failsafe Core":4,"Flare":3,"Hungry Hungry Dinosaur":3,"Infected Skin":3,"Jamming Backpack":2,"Lifeform Scanner":3,"Lost Organ":1,"Magma Boots":4,"Mosquitor":2,"Mud Lover":4,"Plastic Boots":3,"Pocket Watch":3,"Predator’s Claw":2,"Pyromaniac":4,"Raptor Eye":4,"Rusty Antenna":1,"Shaving foam can":3,"Smelly Rafflesia":3,"Titanium Excess":2,"Virus":3,"Wildfire Mutation":4,"Jellyshield":3});
 Object.assign(window.ITEM_TIER, {"Fossil: Spine":2,"Fossil: Jaw":2,"Fossil: Right Arm":2,"Fossil: Right Leg":2,"Fossil: Left Leg":2,"Fossil: Left Arm":3,"Fossil: Tail":2,"Fossil: Tooth":1,"Fossil: Skull":3});
+// Builder's Turret can't be bought; every Builder run starts with one.
+window.UNLOCKS["Builder's Turret"] = "start a run as Builder (it can't be bought)";

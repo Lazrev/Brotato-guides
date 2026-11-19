@@ -8,35 +8,37 @@
 <meta property="og:title" content="Brotato Character Guides">
 <meta property="og:description" content="Every Brotato character ranked for Danger 5, with builds, weapon progressions and item tier lists.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#f3e9d2" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#14110d" media="(prefers-color-scheme: dark)">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%23f2b632' stroke='%23231c12' stroke-width='3'/%3E%3Ctext x='16' y='23' font-family='Arial Black,Arial,sans-serif' font-size='20' font-weight='900' text-anchor='middle' fill='%23231c12'%3ES%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#eef0f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0f15" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='28' height='28' rx='8' fill='%2362e34b' stroke='%230d0f15' stroke-width='3'/%3E%3Ctext x='16' y='23' font-family='Arial Black,Arial,sans-serif' font-size='20' font-weight='900' text-anchor='middle' fill='%230d0f15'%3ES%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Design: "loot drop" arena UI. Tier ladder coloured like item rarity (S legendary ... D common),
+/* Design: "loot drop" game UI on a cool night-navy ground with one bright green action colour.
+   Tier ladder S orange, A gold, B teal, C pink, D stone, kept apart from the item rarity colours;
    chunky outlined panels with hard drop shadows, buttons that press down. See DESIGN.md. */
 :root{
-  --bg:#f3e9d2; --surface:#fffaf0; --ink:#231c12; --muted:#6b5d45; --line:#dccca8;
-  --edge:#231c12; --shadow:#231c12; --dot:rgba(35,28,18,.09); --title-shadow:#e8c77a; --letter-shadow:rgba(0,0,0,.3);
-  --accent:#8a5600; --on-accent:#ffffff; --accent-soft:#f6e2b0; --danger:#b3261e;
-  --tS:#b35400; --tA:#7b3fc4; --tB:#2363b0; --tC:#2c7a37; --tD:#5b5f66; --on-tier:#ffffff;
+  --bg:#eef0f4; --surface:#ffffff; --ink:#12141b; --muted:#555c6b; --line:#d9dce4;
+  --edge:#12141b; --shadow:#12141b; --dot:rgba(18,20,27,.08); --title-shadow:#9fe28f; --letter-shadow:rgba(0,0,0,.3);
+  --accent:#237a17; --on-accent:#ffffff; --accent-soft:#dcf3d5; --danger:#b3261e;
+  --tS:#b35400; --tA:#8a6800; --tB:#0f766e; --tC:#b02d6e; --tD:#6b6257; --on-tier:#ffffff;
+  --r1:#7a8189; --r2:#3b82f6; --r3:#a855f7; --r4:#ef4444; --sprite-halo:none;
   --display:"Lilita One","Figtree",system-ui,sans-serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#14110d; --surface:#201a13; --ink:#f4ead8; --muted:#b3a58c; --line:#3a3127;
-    --edge:#4a3d2c; --shadow:#000000; --dot:rgba(244,234,216,.06); --title-shadow:#000000; --letter-shadow:transparent;
-    --accent:#f2b632; --on-accent:#14110d; --accent-soft:#3d2f12; --danger:#ff6b5e;
-    --tS:#ffa63d; --tA:#c08cff; --tB:#6fb0ff; --tC:#7fd67f; --tD:#b8bcc4; --on-tier:#14110d; color-scheme:dark;
+    --bg:#0d0f15; --surface:#161923; --ink:#eef1f5; --muted:#9aa1b0; --line:#242838;
+    --edge:#394057; --shadow:#000000; --dot:rgba(238,241,245,.05); --title-shadow:#000000; --letter-shadow:transparent;
+    --accent:#62e34b; --on-accent:#0d0f15; --accent-soft:#15291a; --danger:#ff6b5e;
+    --tS:#ff9a3d; --tA:#f2cf4a; --tB:#3fd0c9; --tC:#f28ab8; --tD:#b3ab9e; --on-tier:#0d0f15; --r1:#8d949c; --sprite-halo:drop-shadow(0 0 1px rgba(238,241,245,.7)) drop-shadow(0 0 1px rgba(238,241,245,.35)); color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#14110d; --surface:#201a13; --ink:#f4ead8; --muted:#b3a58c; --line:#3a3127;
-  --edge:#4a3d2c; --shadow:#000000; --dot:rgba(244,234,216,.06); --title-shadow:#000000; --letter-shadow:transparent;
-  --accent:#f2b632; --on-accent:#14110d; --accent-soft:#3d2f12; --danger:#ff6b5e;
-  --tS:#ffa63d; --tA:#c08cff; --tB:#6fb0ff; --tC:#7fd67f; --tD:#b8bcc4; --on-tier:#14110d; color-scheme:dark;
+  --bg:#0d0f15; --surface:#161923; --ink:#eef1f5; --muted:#9aa1b0; --line:#242838;
+  --edge:#394057; --shadow:#000000; --dot:rgba(238,241,245,.05); --title-shadow:#000000; --letter-shadow:transparent;
+  --accent:#62e34b; --on-accent:#0d0f15; --accent-soft:#15291a; --danger:#ff6b5e;
+  --tS:#ff9a3d; --tA:#f2cf4a; --tB:#3fd0c9; --tC:#f28ab8; --tD:#b3ab9e; --on-tier:#0d0f15; --r1:#8d949c; --sprite-halo:drop-shadow(0 0 1px rgba(238,241,245,.7)) drop-shadow(0 0 1px rgba(238,241,245,.35)); color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
@@ -45,6 +47,8 @@ body{margin:0;background-color:var(--bg);background-image:radial-gradient(var(--
 header.top{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(2rem,6vw,3.2rem);line-height:1;letter-spacing:.01em;margin:0;text-wrap:balance;text-shadow:0 3px 0 var(--title-shadow)}
 h1 a{color:inherit;text-decoration:none}
+h1 a{display:flex;align-items:center;gap:.3em}
+h1 .logo{flex:none;width:min(48%,340px);height:auto}  /* the game's own logo (owner's decision, 2026-11-19), from the fandom wiki */
 .sub{color:var(--muted);margin:0;max-width:62ch}
 h2{font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.1;letter-spacing:.01em;margin:0 0 10px;text-wrap:balance}
 h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 6px;font-weight:700}
@@ -80,6 +84,7 @@ button,input{font:inherit;color:inherit}
 .chip{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;min-height:44px;max-width:100%;padding:7px 12px 7px 8px;border-radius:10px;background:var(--bg);text-decoration:none;color:var(--ink);font-weight:700}
 .chip:hover{border-color:var(--accent)}
 .chip .rk{font-variant-numeric:tabular-nums;font-size:.75rem;color:var(--muted);min-width:1.6em;text-align:right}
+.chip .cico{width:44px;height:44px;margin:-6px -2px;flex:none;object-fit:contain}
 .tag{font-size:.75rem;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:6px;border:1.5px solid var(--muted);color:var(--muted);white-space:nowrap}
 .tag.early{border-color:var(--accent);color:var(--accent)}
 .empty-all{background:var(--surface);padding:16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
@@ -99,7 +104,8 @@ button,input{font:inherit;color:inherit}
 .hero{background:var(--surface);padding:20px;display:flex;flex-direction:column;gap:12px}
 .hero .line{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .hero h2{font-size:clamp(2rem,6vw,2.8rem);margin:0;text-shadow:0 3px 0 var(--title-shadow)}
-.pill{font-family:var(--display);font-size:1.1rem;letter-spacing:.02em;color:var(--on-tier);padding:3px 12px;border:2px solid var(--edge);border-radius:8px;box-shadow:0 2px 0 var(--shadow)}
+.hsprite{flex:none;width:64px;height:64px;object-fit:contain}
+.pill{font-family:var(--display);font-size:1.1rem;letter-spacing:.02em;color:var(--on-tier);padding:3px 12px;border:2px solid var(--edge);border-radius:10px;box-shadow:0 2px 0 var(--shadow)}
 .hero p{margin:0;max-width:68ch}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
 .card{background:var(--surface);padding:18px}
@@ -113,13 +119,13 @@ button,input{font:inherit;color:inherit}
 table{border-collapse:collapse;width:100%;min-width:520px}
 th,td{text-align:left;vertical-align:top;padding:10px;border-top:2px solid var(--line)}
 thead th{border-top:0;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size:1.05rem;font-variant-numeric:tabular-nums}
+tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size:1.1rem;font-variant-numeric:tabular-nums}
 .card.avoid{border-left:8px solid var(--danger)}
 .flag{background:var(--accent-soft);border-color:var(--accent);padding:12px 16px}
 .iresults{margin-top:18px}
 .iresults details{border-top:2px solid var(--edge)}
-.iresults summary{min-height:44px;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;cursor:pointer;font-family:var(--display);font-size:1.05rem}
-.iresults .isum{font-family:var(--body,inherit);font-size:.85rem;color:var(--muted);font-weight:700}
+.iresults summary{min-height:44px;display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;cursor:pointer;font-family:var(--display);font-size:1.1rem}
+.iresults .isum{font-family:var(--body,inherit);font-size:.875rem;color:var(--muted);font-weight:700}
 .irow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0}
 .irow a{display:inline-flex;align-items:center;min-height:44px;padding:4px 10px;border:2px solid var(--edge);border-radius:10px;background:var(--surface);color:inherit;text-decoration:none;font-size:.9rem}
 .irow a:hover{border-color:var(--accent)}
@@ -135,18 +141,18 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
 .bpanel p{margin:0}
 .bhead{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .bhead h4{font-family:var(--display);font-weight:400;font-size:1.4rem;line-height:1.1;margin:0}
-.bstart{font-size:1.05rem}
+.bstart{font-size:1.1rem}
 .bstart span{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
 .bstart strong{color:var(--accent)}
 .bstart .vnote{display:block;margin-top:2px;font-size:.8rem;letter-spacing:0;text-transform:none;font-weight:600;color:var(--muted)}
 .tag.kind-m{border-color:var(--tS);color:var(--ink)}
 .tag.kind-r{border-color:var(--tB);color:var(--ink)}
 .small{font-size:.875rem}
-.ithead{font-family:var(--display);font-weight:400;font-size:1.15rem;margin:6px 0 0}
+.ithead{font-family:var(--display);font-weight:400;font-size:1.1rem;margin:6px 0 0}
 .itiers{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .itiers li{display:grid;grid-template-columns:44px minmax(0,1fr);gap:10px;align-items:start}
-.iletter{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:2px solid var(--edge);border-radius:8px;box-shadow:0 2px 0 var(--shadow);font-family:var(--display);font-size:1.5rem;color:var(--on-tier)}
-.inote{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.iletter{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:2px solid var(--edge);border-radius:10px;box-shadow:0 2px 0 var(--shadow);font-family:var(--display);font-size:1.5rem;color:var(--on-tier)}
+.inote{display:block;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);font-weight:700}
 .ilist{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
 .witems .ilist{margin-top:0}
 .has-tip{cursor:help;text-decoration:underline dotted;text-decoration-color:var(--muted);text-underline-offset:3px}
@@ -156,24 +162,29 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
 .tip.rich{max-width:min(340px,calc(100vw - 16px));white-space:normal;font-weight:500;padding:10px 12px}
 .tcard+.tcard{margin-top:10px;padding-top:10px;border-top:2px solid var(--line)}
 .thead{display:flex;align-items:center;gap:10px}
-.thead img{flex:none;width:40px;height:40px;object-fit:contain;background:rgba(255,255,255,.14);border-radius:6px}
+.thead img{flex:none;width:40px;height:40px;object-fit:contain;filter:var(--sprite-halo)}
 .thead strong{font-family:var(--display);font-weight:400;font-size:1.1rem;line-height:1.1}
-.tdlc{font-size:.7rem;font-weight:700;letter-spacing:.06em;border:1.5px solid var(--edge);border-radius:4px;padding:0 4px;vertical-align:2px}
-.tmeta{font-size:.78rem;color:var(--muted);font-weight:700;margin-top:2px}
+.tdlc{font-size:.75rem;font-weight:700;letter-spacing:.06em;border:1.5px solid var(--edge);border-radius:4px;padding:0 4px;vertical-align:2px}
+.tmeta{font-size:.8rem;color:var(--muted);font-weight:700;margin-top:2px}
 .ttier{padding-left:6px;box-shadow:inset 3px 0 0 var(--c,var(--r1))}
 .ttier.r1{--c:var(--r1)}.ttier.r2{--c:var(--r2)}.ttier.r3{--c:var(--r3)}.ttier.r4{--c:var(--r4)}
 .tfx{list-style:none;margin:8px 0 0;padding:0}
 .tfx li{margin:2px 0;padding-left:10px;text-indent:-10px}
 .tfx li::before{content:"• ";color:var(--muted)}
 .tun{margin:8px 0 0;font-size:.8rem;color:var(--muted);font-weight:700}
-.tip table.tstat{min-width:0;width:100%;margin-top:8px;font-size:.78rem;font-variant-numeric:tabular-nums}
+.tip table.tstat{min-width:0;width:100%;margin-top:8px;font-size:.8rem;font-variant-numeric:tabular-nums}
 .tip .tstat th,.tip .tstat td{padding:2px 4px;border-top:1px solid var(--line);white-space:nowrap}
 .tip .tstat thead th{border-top:0;font-size:.75rem;letter-spacing:0;text-transform:none;color:var(--ink);text-align:left}
 .tip .tstat tbody th{font-family:inherit;font-size:inherit;font-weight:700;color:var(--muted);white-space:normal}
-.tip .tstat tbody th.tsub{color:var(--ink);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;padding-top:5px}
+.tip .tstat tbody th.tsub{color:var(--ink);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;padding-top:5px}
 .tip .tstat .tind{display:block;padding-left:8px}
 .wname{border-radius:4px}
 .wname:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
+.ttrow{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px;text-align:center;font-size:.75rem;font-weight:700;color:var(--muted)}
+.ttrow span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.ttrow img{width:36px;height:36px;object-fit:contain;filter:var(--sprite-halo)}
+.ttrow b{color:var(--ink)}
+.tmark{white-space:nowrap}.tmark img{width:24px;height:24px;vertical-align:-6px;margin-right:3px;object-fit:contain;filter:var(--sprite-halo)}
 .wstats .item{background:var(--surface);border-color:var(--accent)}
 .bX{background:var(--danger);font-size:1.8rem;line-height:1}
 .iavoid .item{border-color:var(--danger)}
@@ -182,7 +193,7 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
 .deep h3{margin:0}
 .deep>p{margin:0;max-width:68ch}
 .deep details{border-top:2px solid var(--line)}
-.deep summary{min-height:44px;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:var(--display);font-size:1.15rem;list-style:none}
+.deep summary{min-height:44px;display:flex;align-items:center;gap:10px;cursor:pointer;font-family:var(--display);font-size:1.1rem;list-style:none}
 .deep summary::-webkit-details-marker{display:none}
 .deep summary::before{content:"+";display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border:2px solid var(--edge);border-radius:6px;font-family:var(--body);font-weight:700}
 .deep details[open]>summary::before{content:"\2212"}
@@ -195,20 +206,19 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
 .dsrc a{display:inline-block;padding:2px 0}
 .foot{margin-top:32px;padding:16px 0 8px;border-top:2px solid var(--line);color:var(--muted);font-size:.875rem}
 .foot p{margin:0 0 6px;max-width:75ch}
-:root{--r1:#8d949c;--r2:#3b82f6;--r3:#a855f7;--r4:#ef4444}
 .item.r1{box-shadow:inset 5px 0 0 var(--r1)}.item.r2{box-shadow:inset 5px 0 0 var(--r2)}
 .item.r3{box-shadow:inset 5px 0 0 var(--r3)}.item.r4{box-shadow:inset 5px 0 0 var(--r4)}
 .item[class*=" r"]{padding-left:13px}
 .wt{display:inline-block;padding:0 7px 0 12px;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);font-weight:700;font-size:.9em;white-space:nowrap}
 .wt.r1{box-shadow:inset 5px 0 0 var(--r1)}.wt.r2{box-shadow:inset 5px 0 0 var(--r2)}
 .wt.r3{box-shadow:inset 5px 0 0 var(--r3)}.wt.r4{box-shadow:inset 5px 0 0 var(--r4)}
-.rkey{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 8px;font-size:.82rem;color:var(--muted)}
-.rkey span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.rkey{display:flex;flex-wrap:wrap;gap:4px 14px;margin:0 0 8px;font-size:.8rem;color:var(--muted)}
+.rkey span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-1px;background:var(--c)}
 .item{padding:3px 8px;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);font-weight:600;font-size:.9rem}
 .item.has-ico{display:inline-flex;align-items:center;gap:6px;padding-left:10px;max-width:100%;min-width:0}
 .item.multi{white-space:normal;flex-wrap:wrap}  /* chips naming several items may wrap; single names stay on one line */
-.item .ico{width:32px;height:32px;margin:-2px 0;flex:none;object-fit:contain;background:rgba(255,255,255,.14);border-radius:4px}
-@media (max-width:480px){.tier{grid-template-columns:52px minmax(0,1fr)}.tier .letter{font-size:1.9rem}.tier .letter small{font-size:.75rem;letter-spacing:0}}
+.item .ico{width:32px;height:32px;margin:-2px 0;flex:none;object-fit:contain;filter:var(--sprite-halo)}
+@media (max-width:480px){.hsprite{width:52px;height:52px}.tier{grid-template-columns:52px minmax(0,1fr)}.tier .letter{font-size:1.9rem}.tier .letter small{font-size:.75rem;letter-spacing:0}}
 @media (max-width:600px){
   table{min-width:0}
   thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
@@ -231,12 +241,12 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
 <a class="skip" id="skip" href="#app">Skip to content</a>
 <div class="wrap">
   <header class="top">
-    <h1 tabindex="-1"><a href="#tiers">Brotato Character Guides</a></h1>
+    <h1 tabindex="-1"><a href="#tiers"><img class="logo" src="img/brotato_logo.webp" alt="Brotato" width="800" height="235"> Character Guides</a></h1>
     <p class="sub" id="sub"></p>
   </header>
   <main id="app" tabindex="-1"><noscript><p class="sub">This guide needs JavaScript. Turn it on in your browser to see the tier list and builds.</p></noscript></main>
   <footer class="foot">
-    <p><strong>Unofficial fan guide.</strong> Not affiliated with or endorsed by Blobfish, the developer of Brotato. Brotato and its content belong to their owners. Item and weapon sprites are Blobfish&rsquo;s art, via the <a href="https://brotato.fandom.com/wiki/Items">Brotato Fandom Wiki</a>.</p>
+    <p><strong>Unofficial fan guide.</strong> Not affiliated with or endorsed by Blobfish, the developer of Brotato. Brotato and its content belong to their owners. Character, item and weapon sprites are Blobfish&rsquo;s art, via the <a href="https://brotato.fandom.com/wiki/Characters">Brotato Fandom Wiki</a>.</p>
     <p>Item, weapon and unlock data comes from the community wikis (<a href="https://brotato.wiki.spellsandguns.com/" rel="noopener">brotato.wiki.spellsandguns.com</a>, <a href="https://brotato.wiki.fextralife.com/" rel="noopener">brotato.wiki.fextralife.com</a>). Rankings, builds and ratings are this site&rsquo;s own recommendations.</p>
   </footer>
 </div>
@@ -265,7 +275,7 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
   function builds(g){ return B[g.n] || []; }
 
   var RARITY = window.ITEM_TIER || {}, RNAME = {1:"Tier I, common", 2:"Tier II, uncommon", 3:"Tier III, rare", 4:"Tier IV, legendary"};
-  var UN = window.UNLOCKS || {}, NAMES = {}, AT = {}, UNL = {}, ICONS = window.ITEM_ICONS || {};
+  var UN = window.UNLOCKS || {}, NAMES = {}, AT = {}, UNL = {}, ICONS = window.ITEM_ICONS || {}, CICONS = window.CHAR_ICONS || {};
   (window.ITEM_NAMES||[]).forEach(function(n){ NAMES[n]=1; });
   (window.AT_ITEMS||[]).forEach(function(n){ AT[n]=1; });
   (window.UNLISTED_ITEMS||[]).forEach(function(n){ UNL[n]=1; });
@@ -321,7 +331,15 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
     return '<div class="tcard"><div class="thead">'+sprite(f.n)+'<div><strong>'+esc(f.n)+'</strong>'+(dlc ? ' <span class="tdlc">'+dlc+'</span>' : '')
       + (meta.length ? '<div class="tmeta">'+meta.join(" · ")+'</div>' : '') + '</div></div>'
       + (info ? '<ul class="tfx">'+lines(info[0])+'</ul>' : '')
+      + (f.n === "Builder's Turret" ? turretTiers() : '')
       + '<p class="tun">'+esc(oneTip(f.n, f.tag))+'</p></div>';
+  }
+  // The turret's four looks, with the Structure Range each one needs.
+  function turretTiers(){
+    var need = ["Start", "+30 range", "+150 range", "+300 range"];
+    return '<div class="ttrow">' + need.map(function(n, i){
+      return '<span><img src="img/items/builders_turret_'+(i+1)+'.png" alt="" width="36" height="36"><b class="ttier r'+(i+1)+'">'+TIERN[i+1]+'</b>'+n+'</span>';
+    }).join("") + '</div>';
   }
   function weaponCard(f){
     var w = WINFO[nkey(f.n)];
@@ -360,10 +378,18 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
   WNAME["Knive"] = "Knife"; WNAME["Double Barrel"] = "Double Barrel Shotgun"; WNAME["Molotov"] = "Molotov Cocktail";
   var W_RE = new RegExp("\\b(?:" + Object.keys(WNAME).sort(function(a,b){ return b.length-a.length; }).map(reEsc).join("|") + ")(?:e?s)?\\b", "g");
   function weaponMarks(html){
-    return html.replace(W_RE, function(m){
+    return turretMarks(html.replace(W_RE, function(m){
       var n = WNAME[m] || WNAME[m.replace(/s$/, "")] || WNAME[m.replace(/es$/, "")];
       if(!n || INAME[m]) return m;
       return '<span class="wname has-tip" tabindex="0" data-names="'+namesAttr([{n:n, tag:"", w:true}])+'" aria-describedby="tip">'+m+'</span>';
+    }));
+  }
+  // Builder's Turret only appears in running text (Builder's traits and builds): give it its
+  // sprite and item card there, like a weapon name.
+  function turretMarks(html){
+    return html.replace(/Builder(?:'|’)s Turret/g, function(m){
+      return '<span class="wname has-tip tmark" tabindex="0" data-names="'+namesAttr([{n:"Builder's Turret", tag:"AT", w:false}])+'" aria-describedby="tip">'
+        + '<img src="img/items/builders_turret_1.png" alt="" width="24" height="24">'+m+'</span>';
     });
   }
   // Split on ", " but not inside parentheses.
@@ -537,7 +563,9 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       if(!list.length) return "";
       var chips = list.map(function(g){
         var href = '#'+g.slug + (state.type!=="all" ? '/'+(firstOfType(g)+1) : '');
-        return '<a class="chip" href="'+href+'"><span class="rk">'+g.rank+'</span>'+esc(g.n)
+        var ci = CICONS[g.n];
+        return '<a class="chip" href="'+href+'"><span class="rk">'+g.rank+'</span>'
+          + (ci ? '<img class="cico" src="img/chars/'+ci+'.png" alt="" width="44" height="44" decoding="async">' : '') + esc(g.n)
           + (g.p!=="base" ? '<span class="tag">'+PTAG[g.p]+'</span>' : '')
           + (g.early ? '<span class="tag early">EARLY</span>' : '') + '</a>';
       }).join("");
@@ -763,12 +791,14 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       + (prev ? '<a href="#'+prev.slug+'">&larr; #'+prev.rank+' '+esc(prev.n)+'</a>' : '')
       + (prev&&next ? ' &nbsp;·&nbsp; ' : '')
       + (next ? '<a href="#'+next.slug+'">#'+next.rank+' '+esc(next.n)+' &rarr;</a>' : '') + '</span></nav>'
-      + '<section class="hero"><div class="line"><h2 id="guide-title" tabindex="-1">'+esc(g.n)+'</h2><span class="pill b'+g.t+'">'+g.t+' tier</span>'
+      + '<section class="hero"><div class="line">'
+      + (CICONS[g.n] ? '<img class="hsprite" src="img/chars/'+CICONS[g.n]+'.png" alt="" width="64" height="64">' : '')
+      + '<h2 id="guide-title" tabindex="-1">'+esc(g.n)+'</h2><span class="pill b'+g.t+'">'+g.t+' tier</span>'
       + '<span class="tag">RANK '+g.rank+' OF '+G.length+'</span><span class="tag">'+PACK[g.p].toUpperCase()+'</span></div>'
       + '<p>'+esc(g.why)+'</p></section>'
       + (g.early ? '<div class="flag"><strong>Early rating.</strong> Primal Dread launched November 2, 2026. This build comes from launch-week guides and the character&rsquo;s kit, not from long-tested runs.</div>' : '')
       + buildsSection(g, bi)
-      + '<div class="grid2"><section class="card"><h3>Traits</h3><ul>'+g.traits.map(function(t){return '<li>'+esc(t)+'</li>';}).join("")+'</ul>'
+      + '<div class="grid2"><section class="card"><h3>Traits</h3><ul>'+g.traits.map(function(t){return '<li>'+turretMarks(esc(t))+'</li>';}).join("")+'</ul>'
       + '<dl class="kv"><dt>Unlock</dt><dd>'+esc(g.u)+'</dd>'+(g.r?'<dt>Win reward</dt><dd>'+esc(g.r)+'</dd>':'')+'</dl></section>'
       + '<section class="card"><h3>How to play</h3><p>'+esc(g.play)+'</p></section></div>'
       + '<section class="card"><h3>What to prioritize by wave</h3><div class="tablewrap"><table><thead><tr><th>Waves</th><th>Stats</th><th>Items</th></tr></thead><tbody>'
