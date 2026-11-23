@@ -119,6 +119,22 @@ button,input{font:inherit;color:inherit}
 .dzrow button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
 .preq{margin:0;font-size:.875rem}
 .plist li:not(.locked) .preq{color:var(--muted)}
+/* Screenshot import: a card that is also a drop target; the preview lists what it found before applying */
+.pimport{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.pimport h2{margin:0}
+.pimport.drag{border-style:dashed;border-color:var(--accent);background:var(--accent-soft)}
+.pimport .prow{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.pimport .hint{margin:0;color:var(--muted);font-size:.875rem}
+.ubtn.go{background:var(--accent);color:var(--on-accent)}
+.pres{display:flex;flex-direction:column;gap:10px;border-top:2px solid var(--line);padding-top:12px}
+.pres:empty{display:none}
+.pres p{margin:0}
+.pres .perr{color:var(--danger);font-weight:700}
+.pres details{border-top:1px solid var(--line)}
+.pres summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-family:var(--display);font-size:1.1rem}
+.pres .ilist{margin:0 0 10px}
+.pres .unsure .item{border-color:var(--tA)}
+.pres .plocked .ico{filter:grayscale(1);opacity:.55}
 /* Guide page: "how to unlock" card, top right of the header, only for locked characters */
 .lockcard{margin-left:auto;max-width:300px;padding:10px 14px;border:2px dashed var(--edge);border-radius:10px;background:var(--bg);font-size:.875rem}
 .lockcard p{margin:0}
@@ -669,6 +685,11 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       + '<section class="hero"><h2 id="guide-title" tabindex="-1">My progress</h2>'
       + '<p>Tick the characters you&rsquo;ve unlocked and the highest Danger you&rsquo;ve won with each. Saved in this browser only, so other people (and your other devices) keep their own.</p>'
       + '<p class="pstats" id="pstats"></p></section>'
+      + '<section class="card pimport" id="pimport" aria-labelledby="pimp-h"><h2 id="pimp-h">Import from a screenshot</h2>'
+      + '<p>Screenshot the game&rsquo;s character select grid, then drop it here, paste it (Ctrl+V) or choose the file. It&rsquo;s read in this browser only; nothing is uploaded.</p>'
+      + '<div class="prow"><button type="button" class="ubtn" id="pfile-btn">Choose screenshot</button><input type="file" id="pfile" accept="image/*" hidden>'
+      + '<p class="hint">Works best cropped to the grid of character tiles.</p></div>'
+      + '<div class="pres" id="pres" aria-live="polite"></div></section>'
       + '<div class="controls pcontrols">'
       + '<div class="fgroup"><span class="flabel" id="lbl-pf">Show</span><div class="seg" role="group" aria-labelledby="lbl-pf">'
       + [["all","All"],["locked","Locked"],["have","Unlocked"],["todo","D5 to do"]].map(function(p){
@@ -681,7 +702,7 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       + '<button type="button" class="ubtn pclear" id="pclear">Clear all progress</button>'
       + '</div><p id="pstatus" class="sr-only" role="status" aria-live="polite"></p><div id="plist"></div></article>';
     app.innerHTML = h;
-    progressList(); progressStats();
+    progressList(); progressStats(); importWire();
     app.querySelectorAll("[data-pf]").forEach(function(b){
       b.addEventListener("click", function(){
         state.prog = b.getAttribute("data-pf"); save();
@@ -725,6 +746,311 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       say(danger(g)<0 ? g.n + ": no Danger win marked." : g.n + ": highest Danger won is " + danger(g) + ".");
     });
   }
+  // Screenshot import: find the grid of tiles in a character-select screenshot, call each tile
+  // locked (dim padlock, no bright pixels), the random pick (red "?") or a face, and match faces
+  // to the 74 sprites in img/chars. Locked tiles hide who they are, so the locked set is every
+  // character not matched to a face. All of it runs on a canvas in this browser.
+  var SN = 24;  // faces are compared as SN x SN colour samples
+  function lum(d, i){ return 0.299*d[i] + 0.587*d[i+1] + 0.114*d[i+2]; }
+  function median(a){ a.sort(function(p,q){ return p-q; }); return a[a.length>>1] || 0; }
+  // Lines stand out from a moving average; this removes the slow trend from other UI and padding.
+  function highpass(p, r){
+    var n = p.length, out = new Float64Array(n), s = 0, i, c = 0;
+    for(i=0;i<n;i++){
+      s += p[i]; c++; if(i-2*r-1 >= 0){ s -= p[i-2*r-1]; c--; }
+      if(i-r >= 0) out[i-r] = Math.max(0, p[i-r] - s/c);
+    }
+    return out;
+  }
+  // Tile pitch from the tile borders: autocorrelation of the border profile. The pitch is the
+  // first strong peak whose double is strong too (a tile's own width fails that test); then a far
+  // multiple sets the fraction (a scaled screenshot rarely has a whole-pixel pitch).
+  function gridPeriod(p, lo, hi){
+    var n = p.length, m = 0, i, L, ac = [], best = lo, top = Math.floor(n/2);
+    for(i=0;i<n;i++) m += p[i]; m /= n;
+    for(L=1; L<=top; L++){ var s = 0; for(i=0;i+L<n;i++) s += (p[i]-m)*(p[i+L]-m); ac[L] = s/(n-L); }
+    for(L=lo; L<=Math.min(hi, top); L++) if(ac[L] > ac[best]) best = L;
+    if(!(ac[best] > 0)) return -1;
+    function near(x){ var a = Math.floor(x), b = Math.ceil(x); return Math.max(ac[a]||-Infinity, ac[b]||-Infinity); }
+    var P = best;
+    for(L=lo; L<=Math.min(hi, top-1); L++){
+      if(ac[L] < 0.5*ac[best] || ac[L] < ac[L-1] || ac[L] < ac[L+1]) continue;
+      if(2*L > top || near(2*L) >= 0.5*ac[best]){ P = L; break; }
+    }
+    // Refine: the furthest clear peak at a multiple of P.
+    for(var mlt=Math.floor(top/P); mlt>=2; mlt--){
+      var g = Math.round(mlt*P), pk = g;
+      for(i=g-2;i<=g+2;i++) if(ac[i] > (ac[pk]||-Infinity)) pk = i;
+      if(pk <= 1 || pk >= top || !(ac[pk] >= 0.3*ac[best])) continue;
+      var y0 = ac[pk-1], y1 = ac[pk], y2 = ac[pk+1], den = y0 - 2*y1 + y2;
+      return (pk + (den < 0 ? 0.5*(y0 - y2)/den : 0)) / mlt;
+    }
+    return P;
+  }
+  // Fold the profile by the (fractional) pitch into B bins: the two strongest peaks are a tile's
+  // left and right borders. Positions come back in pixels.
+  function gridPhase(p, P){
+    var B = Math.round(P), f = new Float64Array(B), sm = new Float64Array(B), i, a = 0, b = -1, gap = Math.max(3, Math.round(B*0.05));
+    for(i=0;i<p.length;i++) f[Math.floor((i % P) / P * B) % B] += p[i];
+    for(i=0;i<B;i++) sm[i] = f[(i-1+B)%B] + 2*f[i] + f[(i+1)%B];
+    for(i=1;i<B;i++) if(sm[i] > sm[a]) a = i;
+    for(i=0;i<B;i++){ var dd = Math.min(Math.abs(i-a), B-Math.abs(i-a)); if(dd>gap && (b<0 || sm[i]>sm[b])) b = i; }
+    var d = (b - a + B) % B;
+    return {sm:sm, w: (d > B/2 ? d : B - d) * P / B};
+  }
+  // With the tile width known, the offset whose two borders (o and o+w) are darkest together.
+  function pairOffset(sm, P, w){
+    var B = sm.length, wb = Math.round(w / P * B), best = 0, bv = -1;
+    for(var o=0;o<B;o++){ var v = sm[o] + sm[(o+wb)%B]; if(v > bv){ bv = v; best = o; } }
+    return best * P / B;
+  }
+  // Each column (or row) of tiles: its two border lines, snapped to the local peak. Keeps the
+  // longest run of strong ones, which drops other UI around the grid.
+  function gridLines(p, P, start, w){
+    var out = [], n = p.length, k, j, r = Math.max(2, Math.round(P*0.04));
+    for(k=-1; start + k*P < n; k++){
+      var c = Math.round(start + k*P), e = Math.round(start + k*P + w); if(c < 0 || e >= n) continue;
+      var a = c, av = -1, b = e, bv = -1;
+      for(j=Math.max(0,c-r); j<=Math.min(n-1,c+r); j++) if(p[j]>av){ av = p[j]; a = j; }
+      for(j=Math.max(0,e-r); j<=Math.min(n-1,e+r); j++) if(p[j]>bv){ bv = p[j]; b = j; }
+      out.push({a:a, b:b, s:av + bv});
+    }
+    if(!out.length) return [];
+    var top = out.map(function(o){ return o.s; }).sort(function(x,y){ return y-x; }), ref = top[Math.min(top.length-1, 1)];
+    var runs = [], cur = [];
+    out.forEach(function(o){ if(o.s >= 0.35*ref) cur.push(o); else { if(cur.length) runs.push(cur); cur = []; } });
+    if(cur.length) runs.push(cur);
+    runs.sort(function(x,y){ return y.length - x.length; });
+    return runs[0] || [];
+  }
+  function shotGrid(img){
+    var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height, sc = Math.min(1, 2400/iw);
+    var W = Math.max(1, Math.round(iw*sc)), H = Math.max(1, Math.round(ih*sc));
+    var cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    var cx = cv.getContext("2d", {willReadFrequently:true}); cx.drawImage(img, 0, 0, W, H);
+    var d = cx.getImageData(0, 0, W, H).data, col = [], row = [], x, y, Lm = new Float32Array(W*H);
+    for(x=0;x<W;x++) col[x] = 0; for(y=0;y<H;y++) row[y] = 0;
+    for(x=0;x<W*H;x++) Lm[x] = lum(d, x*4);
+    // Tile borders are thin dark lines: count pixels that are very dark, or darker than the
+    // pixels 2px either side (a line that downscaling or JPEG has blurred).
+    for(y=2;y<H-2;y++) for(x=2;x<W-2;x++){
+      var l = Lm[y*W+x], dark = l < 32;
+      if(dark || Math.min(Lm[y*W+x-2], Lm[y*W+x+2]) - l > 8) col[x]++;
+      if(dark || Math.min(Lm[(y-2)*W+x], Lm[(y+2)*W+x]) - l > 8) row[y]++;
+    }
+    col = highpass(col, 4); row = highpass(row, 4);
+    var P = gridPeriod(col, Math.max(12, Math.round(W/60)), Math.round(W/3));
+    if(P < 12) return null;
+    // Tiles are square, so both axes share the pitch and the tile width. Face outlines can fool
+    // one axis into a narrow "tile"; the wider of the two readings is the real border pair.
+    var pc = gridPhase(col, P), pr = gridPhase(row, P), w = Math.max(pc.w, pr.w);
+    var cols = gridLines(col, P, pairOffset(pc.sm, P, w), w);
+    var rows = gridLines(row, P, pairOffset(pr.sm, P, w), w);
+    if(!cols.length || !rows.length) return null;
+    // Tiles are square: border-to-border width and height should agree.
+    var tw = median(cols.map(function(c){ return c.b - c.a; })), th = median(rows.map(function(r){ return r.b - r.a; }));
+    if(Math.abs(tw - th) > 0.15*Math.max(tw, th)) return null;
+    // Page background = median colour in the gaps between columns; a slot that matches it is empty.
+    var gr = [], gg = [], gb = [];
+    for(var ci=0; ci+1<cols.length; ci++){
+      var gx = Math.round((cols[ci].b + cols[ci+1].a)/2);
+      rows.forEach(function(r){ for(var yy=r.a; yy<r.b; yy+=3){ var i = (yy*W+gx)*4; gr.push(d[i]); gg.push(d[i+1]); gb.push(d[i+2]); } });
+    }
+    var gap = [median(gr), median(gg), median(gb)], tiles = [];
+    rows.forEach(function(r, ri){ cols.forEach(function(c, cj){
+      var t = {r:ri, c:cj, x0:c.a, x1:c.b, y0:r.a, y1:r.b}, same = 0, tot = 0, ins = Math.round((c.b-c.a)*0.15);
+      for(var yy=t.y0+ins; yy<t.y1-ins; yy+=2) for(var xx=t.x0+ins; xx<t.x1-ins; xx+=2){
+        var i = (yy*W+xx)*4; tot++;
+        if(Math.abs(d[i]-gap[0]) + Math.abs(d[i+1]-gap[1]) + Math.abs(d[i+2]-gap[2]) < 30) same++;
+      }
+      if(tot && same/tot < 0.6){ tileLook(t, d, W); tiles.push(t); }
+    }); });
+    return {W:W, d:d, tiles:tiles};
+  }
+  // Inside one tile: background (median of a ring just inside the border, so highlighted tiles
+  // work), share of bright pixels, share of red pixels, and the box around whatever isn't background.
+  function tileLook(t, d, W){
+    var ins = Math.round(Math.min(t.x1-t.x0, t.y1-t.y0)*0.09);
+    var X0 = t.x0+ins, X1 = t.x1-ins, Y0 = t.y0+ins, Y1 = t.y1-ins, x, y, i, rr = [], gg = [], bb = [];
+    function ring(xx, yy){ var k = (yy*W+xx)*4; rr.push(d[k]); gg.push(d[k+1]); bb.push(d[k+2]); }
+    for(x=X0;x<X1;x+=2){ ring(x, Y0); ring(x, Y0+2); ring(x, Y1-1); ring(x, Y1-3); }
+    for(y=Y0;y<Y1;y+=2){ ring(X0, y); ring(X0+2, y); ring(X1-1, y); ring(X1-3, y); }
+    var bg = [median(rr), median(gg), median(bb)], cw = X1-X0, ch = Y1-Y0;
+    var colc = new Int32Array(cw), rowc = new Int32Array(ch), bright = 0, red = 0, tot = cw*ch;
+    for(y=Y0;y<Y1;y++) for(x=X0;x<X1;x++){
+      i = (y*W+x)*4;
+      if(lum(d, i) > 150) bright++;
+      if(d[i] > 120 && d[i] > d[i+1]*1.8 && d[i] > d[i+2]*1.8) red++;
+      if(Math.abs(d[i]-bg[0]) + Math.abs(d[i+1]-bg[1]) + Math.abs(d[i+2]-bg[2]) > 60){ colc[x-X0]++; rowc[y-Y0]++; }
+    }
+    var bx0 = -1, bx1 = -1, by0 = -1, by1 = -1;
+    for(x=0;x<cw;x++) if(colc[x] >= 2){ if(bx0<0) bx0 = x; bx1 = x; }
+    for(y=0;y<ch;y++) if(rowc[y] >= 2){ if(by0<0) by0 = y; by1 = y; }
+    t.bg = bg; t.bright = tot ? bright/tot : 0; t.red = tot ? red/tot : 0;
+    t.box = bx0 < 0 || by0 < 0 ? null : [X0+bx0, Y0+by0, X0+bx1+1, Y0+by1+1];
+  }
+  // Area-average a box of RGBA pixels into SN x SN premultiplied [r,g,b,a] values (0-1).
+  function shotSample(d, W, box, useAlpha){
+    var out = new Float32Array(SN*SN*4), bw = (box[2]-box[0])/SN, bh = (box[3]-box[1])/SN;
+    for(var j=0;j<SN;j++) for(var k=0;k<SN;k++){
+      var xs = box[0]+k*bw, ys = box[1]+j*bh, r = 0, g = 0, b = 0, a = 0, c = 0;
+      for(var y=Math.floor(ys); y<Math.ceil(ys+bh); y++) for(var x=Math.floor(xs); x<Math.ceil(xs+bw); x++){
+        var i = (y*W+x)*4, al = useAlpha ? d[i+3]/255 : 1;
+        r += d[i]*al; g += d[i+1]*al; b += d[i+2]*al; a += al; c++;
+      }
+      var o = (j*SN+k)*4; c = c || 1; out[o] = r/c/255; out[o+1] = g/c/255; out[o+2] = b/c/255; out[o+3] = a/c;
+    }
+    return out;
+  }
+  // Images: fetch as a blob first (never taints the canvas), else a CORS <img>.
+  function loadPic(src){
+    return fetch(src).then(function(r){ if(!r.ok) throw new Error(r.status); return r.blob(); })
+      .then(function(b){ return createImageBitmap(b); })
+      .catch(function(){ return new Promise(function(res, rej){ var im = new Image(); im.crossOrigin = "anonymous"; im.onload = function(){ res(im); }; im.onerror = rej; im.src = src; }); });
+  }
+  var spriteRefs = null;  // promise of [{g, s}] once loaded
+  function charRefs(){
+    if(spriteRefs) return spriteRefs;
+    spriteRefs = Promise.all(G.map(function(g){
+      if(!CICONS[g.n]) return null;
+      return loadPic("img/chars/" + CICONS[g.n] + ".png").then(function(im){
+        var w = im.naturalWidth || im.width, h = im.naturalHeight || im.height;
+        var cv = document.createElement("canvas"); cv.width = w; cv.height = h;
+        var c = cv.getContext("2d", {willReadFrequently:true}); c.drawImage(im, 0, 0);
+        var d = c.getImageData(0, 0, w, h).data, x0 = w, y0 = h, x1 = -1, y1 = -1;
+        for(var y=0;y<h;y++) for(var x=0;x<w;x++) if(d[(y*w+x)*4+3] > 100){ if(x<x0) x0 = x; if(x>x1) x1 = x; if(y<y0) y0 = y; if(y>y1) y1 = y; }
+        return x1 < 0 ? null : {g:g, s:shotSample(d, w, [x0, y0, x1+1, y1+1], true)};
+      });
+    })).then(function(a){ return a.filter(Boolean); }, function(e){ spriteRefs = null; throw e; });
+    return spriteRefs;
+  }
+  // Normalised cross-correlation of a tile and each sprite (composited over the tile's own
+  // background), after subtracting the average sprite: every character is the same egg, so
+  // only the face, hat and hair should count.
+  function matchFaces(grid, refs){
+    var n = SN*SN*3, pairs = [];
+    grid.tiles.forEach(function(t){
+      if(t.red > 0.08){ t.kind = "random"; return; }
+      if(t.bright < 0.005 || !t.box){ t.kind = "locked"; return; }
+      t.kind = "face";
+      var ts = shotSample(grid.d, grid.W, t.box, false), mean = new Float32Array(n);
+      var cs = refs.map(function(r){
+        var b = new Float32Array(n), k = 0;
+        for(var i=0;i<SN*SN;i++) for(var c=0;c<3;c++){ b[k] = r.s[i*4+c] + (1-r.s[i*4+3])*t.bg[c]/255; mean[k] += b[k]/refs.length; k++; }
+        return b;
+      });
+      var a = new Float32Array(n), ma = 0, i;
+      for(i=0;i<SN*SN;i++) for(var c=0;c<3;c++){ var k = i*3+c; a[k] = ts[i*4+c] - mean[k]; ma += a[k]; }
+      ma /= n;
+      t.scores = cs.map(function(b, j){
+        var mb = 0, sab = 0, saa = 0, sbb = 0;
+        for(i=0;i<n;i++) mb += b[i] - mean[i]; mb /= n;
+        for(i=0;i<n;i++){ var p = a[i]-ma, q = b[i]-mean[i]-mb; sab += p*q; saa += p*p; sbb += q*q; }
+        return {g:refs[j].g, s:sab/Math.sqrt(saa*sbb + 1e-9)};
+      }).sort(function(p,q){ return q.s - p.s; });
+      t.scores.forEach(function(sc){ if(sc.s > 0.25) pairs.push({t:t, g:sc.g, s:sc.s}); });
+    });
+    // One character per tile: best scores claim first.
+    pairs.sort(function(p,q){ return q.s - p.s; });
+    var used = {};
+    pairs.forEach(function(p){ if(p.t.g || used[p.g.n]) return; p.t.g = p.g; p.t.s = p.s; used[p.g.n] = 1; });
+    grid.tiles.forEach(function(t){
+      if(t.kind !== "face") return;
+      if(!t.g){ t.kind = "unknown"; return; }
+      var next = t.scores.filter(function(x){ return x.g !== t.g; })[0];
+      t.unsure = t.s < 0.45 || (next && t.s - next.s < 0.06);
+    });
+    return grid;
+  }
+  function readShot(file){
+    var pres = document.getElementById("pres"); if(!pres) return;
+    if(!file || !/^image\//.test(file.type)){ pres.innerHTML = '<p class="perr">That isn&rsquo;t an image. Choose a PNG, JPG or WebP screenshot.</p>'; return; }
+    pres.innerHTML = '<p>Reading the screenshot&hellip;</p>';
+    var url = URL.createObjectURL(file), im = new Image();
+    im.onload = function(){
+      charRefs().then(function(refs){
+        var grid = shotGrid(im); URL.revokeObjectURL(url);
+        if(!grid || grid.tiles.length < 8 || grid.tiles.length > G.length + 6) throw new Error("grid");
+        matchFaces(grid, refs);
+        // Most faces should match well; if they don't, this isn't the character grid.
+        var f = grid.tiles.filter(function(t){ return t.kind === "face" || t.kind === "unknown"; });
+        var poor = f.filter(function(t){ return t.kind === "unknown" || t.unsure; }).length;
+        if(!f.length || poor > f.length*0.3) throw new Error("grid");
+        importPreview(grid);
+      }).catch(function(e){
+        URL.revokeObjectURL(url);
+        pres.innerHTML = '<p class="perr">' + (e && e.message === "grid"
+          ? 'Couldn&rsquo;t find the character grid in that image. Use a full-size screenshot of the character select screen, ideally cropped to the tiles, and try again.'
+          : 'Couldn&rsquo;t read the character sprites in this browser, so the import can&rsquo;t run here.') + '</p>';
+      });
+    };
+    im.onerror = function(){ URL.revokeObjectURL(url); pres.innerHTML = '<p class="perr">Couldn&rsquo;t open that image.</p>'; };
+    im.src = url;
+  }
+  function importChips(list){
+    return '<div class="ilist">' + list.map(function(g){
+      var ci = CICONS[g.n];
+      return '<span class="item has-ico">' + (ci ? '<img class="ico" src="img/chars/'+ci+'.png" alt="" width="32" height="32">' : '') + esc(g.n) + '</span>';
+    }).join("") + '</div>';
+  }
+  function importPreview(grid){
+    var pres = document.getElementById("pres");
+    var faces = grid.tiles.filter(function(t){ return t.kind === "face"; });
+    var lockedTiles = grid.tiles.filter(function(t){ return t.kind === "locked"; }).length;
+    var unknown = grid.tiles.filter(function(t){ return t.kind === "unknown"; }).length;
+    var seen = {}; faces.forEach(function(t){ seen[t.g.n] = 1; });
+    var have = G.filter(function(g){ return seen[g.n]; }), rest = G.filter(function(g){ return !seen[g.n]; });
+    var unsure = faces.filter(function(t){ return t.unsure; }).map(function(t){ return t.g; });
+    // Locking the rest is only safe when every locked tile is accounted for.
+    var agree = lockedTiles === rest.length && !unknown;
+    var keep = rest.filter(function(g){ return danger(g) >= 0; });  // a marked win keeps it unlocked
+    var newly = have.filter(function(g){ return !hasChar(g); }).length;
+    var relock = rest.filter(function(g){ return MINE[g.n] && danger(g) < 0; }).length;
+    var h = '<p><strong>Found ' + have.length + ' unlocked, ' + lockedTiles + ' locked</strong> ('
+      + grid.tiles.length + ' tiles' + (grid.tiles.some(function(t){ return t.kind === "random"; }) ? ', including the random pick' : '') + ').</p>'
+      + '<p class="small">Locked tiles only show a padlock, so the locked characters are worked out as everyone not matched to a face'
+      + (agree ? ': ' + rest.length + ' characters, which matches the ' + lockedTiles + ' locked tiles.' : '.') + '</p>'
+      + (agree ? '' : '<p class="small"><strong>Counts don&rsquo;t line up</strong> (' + lockedTiles + ' locked tiles, ' + rest.length + ' characters not matched'
+          + (unknown ? ', ' + unknown + (unknown===1 ? ' tile' : ' tiles') + ' not recognised' : '') + '), so by default only the unlocked ones are applied.</p>')
+      + (unsure.length ? '<div class="unsure"><p class="small"><strong>Less sure about ' + unsure.length + ':</strong> check these after applying.</p>' + importChips(unsure) + '</div>' : '')
+      + '<details><summary>Unlocked (' + have.length + ')</summary>' + importChips(have) + '</details>'
+      + '<details class="plocked"><summary>Locked (' + rest.length + ')</summary>' + importChips(rest) + '</details>'
+      + (rest.length ? '<label class="punl"><input type="checkbox" id="plock"' + (agree ? ' checked' : '') + '> Also mark the other ' + rest.length + ' as locked</label>' : '')
+      + (keep.length ? '<p class="small">' + keep.map(function(g){ return esc(g.n); }).join(", ") + ' will stay unlocked because you&rsquo;ve marked a Danger win with ' + (keep.length===1 ? 'it' : 'them') + '.</p>' : '')
+      + '<p class="small" id="pdelta"></p>'
+      + '<div class="prow"><button type="button" class="ubtn go" id="papply">Apply</button><button type="button" class="ubtn" id="pcancel">Cancel</button></div>';
+    pres.innerHTML = h;
+    var lockBox = document.getElementById("plock");
+    function delta(){
+      var parts = [newly + ' newly unlocked'];
+      if(lockBox && lockBox.checked) parts.push(relock + ' you&rsquo;d ticked set back to locked');
+      document.getElementById("pdelta").innerHTML = 'Applying: ' + parts.join(', ') + '. Danger wins aren&rsquo;t changed.';
+    }
+    delta();
+    if(lockBox) lockBox.addEventListener("change", delta);
+    document.getElementById("pcancel").addEventListener("click", function(){ pres.innerHTML = ''; say("Import cancelled."); document.getElementById("pfile-btn").focus(); });
+    document.getElementById("papply").addEventListener("click", function(){
+      have.forEach(function(g){ if(!isStart(g)) MINE[g.n] = 1; });
+      if(lockBox && lockBox.checked) rest.forEach(function(g){ if(danger(g) < 0) delete MINE[g.n]; });
+      saveMine(); progressList(); progressStats();
+      pres.innerHTML = '<p><strong>Imported.</strong> ' + unlockCount() + ' of ' + G.length + ' characters are now marked unlocked.</p>';
+      say("Imported from the screenshot. " + unlockCount() + " of " + G.length + " unlocked.");
+    });
+  }
+  function importWire(){
+    var box = document.getElementById("pimport"), inp = document.getElementById("pfile");
+    document.getElementById("pfile-btn").addEventListener("click", function(){ inp.click(); });
+    inp.addEventListener("change", function(){ if(inp.files[0]) readShot(inp.files[0]); inp.value = ""; });
+    box.addEventListener("dragover", function(e){ e.preventDefault(); box.classList.add("drag"); });
+    box.addEventListener("dragleave", function(e){ if(!box.contains(e.relatedTarget)) box.classList.remove("drag"); });
+    box.addEventListener("drop", function(e){ e.preventDefault(); box.classList.remove("drag"); if(e.dataTransfer.files[0]) readShot(e.dataTransfer.files[0]); });
+  }
+  // Paste anywhere on the My progress page.
+  document.addEventListener("paste", function(e){
+    if(!document.getElementById("pimport") || !e.clipboardData) return;
+    var f = Array.prototype.filter.call(e.clipboardData.files || [], function(x){ return /^image\//.test(x.type); })[0];
+    if(f){ e.preventDefault(); readShot(f); }
+  });
   function byName(n){ return G.filter(function(x){ return x.n===n; })[0]; }
   function say(t){ var s = document.getElementById("pstatus"); if(s) s.textContent = t; }
   function progressStats(){
