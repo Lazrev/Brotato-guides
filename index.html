@@ -87,6 +87,47 @@ button,input{font:inherit;color:inherit}
 .chip .cico{width:44px;height:44px;margin:-6px -2px;flex:none;object-fit:contain}
 .tag{font-size:.75rem;font-weight:700;letter-spacing:.04em;padding:1px 6px;border-radius:6px;border:1.5px solid var(--muted);color:var(--muted);white-space:nowrap}
 .tag.early{border-color:var(--accent);color:var(--accent)}
+/* My progress: locked chips get a dashed edge, a grey sprite and a lock; wins show a "D0"-"D5" badge */
+.chip.locked{border-style:dashed;color:var(--muted)}
+.chip.locked .cico{filter:grayscale(1);opacity:.55}
+.chip .lock{flex:none;margin-left:-4px;color:var(--muted)}
+.tag.dz{border-color:var(--ink);color:var(--ink)}
+.tag.d5{background:var(--ink);color:var(--surface)}
+.plink{display:inline-flex;flex-direction:column;justify-content:center;min-height:44px;padding:5px 14px;border:2px solid var(--edge);border-radius:10px;background:var(--surface);box-shadow:0 3px 0 var(--shadow);color:var(--ink);text-decoration:none;font-family:var(--display);font-size:1rem;letter-spacing:.02em;line-height:1.2;transition:transform .12s,box-shadow .12s}
+.plink span{font-family:var(--body);font-size:.75rem;font-weight:700;letter-spacing:0;color:var(--muted)}
+.plink:hover{transform:translateY(-2px);box-shadow:0 5px 0 var(--shadow);border-color:var(--accent)}
+.ubtn{min-height:44px;padding:6px 14px;border:2px solid var(--edge);border-radius:10px;background:var(--surface);box-shadow:0 3px 0 var(--shadow);font-family:var(--display);font-size:1rem;letter-spacing:.02em;cursor:pointer}
+.pclear.armed{border-color:var(--danger);color:var(--danger)}
+.pstats{color:var(--muted)}
+.pstats strong{color:var(--ink)}
+.pcontrols{margin:16px 0}
+.plist{list-style:none;margin:0;padding:0;background:var(--surface);border:2px solid var(--edge);border-radius:12px;box-shadow:0 3px 0 var(--shadow)}
+.plist li{display:grid;grid-template-columns:40px minmax(0,13rem) 7.5rem auto minmax(0,1fr);gap:6px 14px;align-items:center;padding:8px 14px}
+.plist li+li{border-top:1px solid var(--line)}
+.plist img{width:40px;height:40px;object-fit:contain}
+.plist li.locked img{filter:grayscale(1);opacity:.55}
+.pname{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-weight:700}
+.pname a{color:var(--ink);text-decoration:none}
+.pname a:hover{text-decoration:underline}
+.pname .pill{font-size:.8rem;padding:0 8px;box-shadow:none}
+.punl{display:inline-flex;align-items:center;gap:8px;min-height:44px;font-weight:700;cursor:pointer}
+.punl input{width:22px;height:22px;margin:0;accent-color:var(--accent);cursor:pointer}
+.punl input:disabled{cursor:default}
+.dzrow{display:flex;align-items:center;gap:4px}
+.dzl{font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.dzrow button{min-width:36px;min-height:44px;padding:0;border:2px solid var(--edge);border-radius:8px;background:var(--bg);font-family:var(--display);font-size:1rem;cursor:pointer}
+.dzrow button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.preq{margin:0;font-size:.875rem}
+.plist li:not(.locked) .preq{color:var(--muted)}
+/* Guide page: "how to unlock" card, top right of the header, only for locked characters */
+.lockcard{margin-left:auto;max-width:300px;padding:10px 14px;border:2px dashed var(--edge);border-radius:10px;background:var(--bg);font-size:.875rem}
+.lockcard p{margin:0}
+.lockcard p+p{margin-top:4px}
+.lockcard .lockhead{display:flex;align-items:center;gap:6px;font-family:var(--display);font-size:1.1rem;letter-spacing:.02em}
+.lockcard .lock{width:16px;height:16px}
+@media (max-width:860px){.plist li{grid-template-columns:40px minmax(0,1fr) auto}.plist .dzrow,.plist .preq{grid-column:2 / -1}}
+@media (max-width:600px){.lockcard{margin-left:0;max-width:none;flex-basis:100%}
+  .plist li{padding:10px 12px}.plist .dzrow,.plist .preq{grid-column:1 / -1}.dzrow{flex-wrap:wrap}.dzl{flex-basis:100%;margin:0}.dzrow button{flex:1 1 0;min-width:0}}
 .empty-all{background:var(--surface);padding:16px;display:flex;flex-wrap:wrap;align-items:center;gap:12px}
 .empty-all p{margin:0;flex:1 1 220px}
 .empty-all button{min-height:44px;padding:8px 16px;background:var(--accent);color:var(--on-accent);border-radius:10px;font-family:var(--display);font-size:1rem;letter-spacing:.02em}
@@ -268,10 +309,29 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
   var app = document.getElementById("app");
   var B = window.BUILDS || {};
   var KIND = {m:"Melee", r:"Ranged", x:"No weapons"};
-  var state = {q:"", pack:"all", type:"all", at:true, pd:true};  // at/pd = "I own this DLC" (item lists)
+  var state = {q:"", pack:"all", type:"all", at:true, pd:true, prog:"all"};  // at/pd = "I own this DLC" (item lists); prog = My progress filter
   try{ var s = JSON.parse(localStorage.getItem("brotato-filter")||"null"); if(s && s.pack) state.pack = s.pack; if(s && s.type) state.type = s.type;
-    if(s && s.at===false) state.at = false; if(s && s.pd===false) state.pd = false; }catch(e){}
-  function save(){ try{ localStorage.setItem("brotato-filter", JSON.stringify({pack:state.pack, type:state.type, at:state.at, pd:state.pd})); }catch(e){} }
+    if(s && s.at===false) state.at = false; if(s && s.pd===false) state.pd = false; if(s && /^(locked|have|todo)$/.test(s.prog)) state.prog = s.prog; }catch(e){}
+  function save(){ try{ localStorage.setItem("brotato-filter", JSON.stringify({pack:state.pack, type:state.type, at:state.at, pd:state.pd, prog:state.prog})); }catch(e){} }
+  // My progress, kept in this browser only. MINE: names marked unlocked (brotato-unlocked).
+  // DANGER: name -> highest Danger won, 0-5 (brotato-danger). Older D5 marks (brotato-d5) carry over as 5.
+  var MINE = {}, DANGER = {};
+  try{ (JSON.parse(localStorage.getItem("brotato-unlocked")||"[]")||[]).forEach(function(n){ MINE[n] = 1; }); }catch(e){}
+  try{ var dz = JSON.parse(localStorage.getItem("brotato-danger")||"{}")||{}; Object.keys(dz).forEach(function(n){ var v = +dz[n]; if(v>=0 && v<=5) DANGER[n] = v; }); }catch(e){}
+  try{ var old = JSON.parse(localStorage.getItem("brotato-d5")||"null");
+    if(old && old.length){ old.forEach(function(n){ DANGER[n] = 5; }); localStorage.setItem("brotato-danger", JSON.stringify(DANGER)); localStorage.removeItem("brotato-d5"); } }catch(e){}
+  function saveMine(){ try{ localStorage.setItem("brotato-unlocked", JSON.stringify(Object.keys(MINE))); }catch(e){} }
+  function saveDanger(){ try{ localStorage.setItem("brotato-danger", JSON.stringify(DANGER)); }catch(e){} }
+  function isStart(g){ return g.u === "Unlocked from the start"; }
+  function hasChar(g){ return isStart(g) || !!MINE[g.n]; }
+  function danger(g){ return DANGER.hasOwnProperty(g.n) ? DANGER[g.n] : -1; }  // -1 = no win marked
+  function tracked(){ return Object.keys(MINE).length > 0 || Object.keys(DANGER).length > 0; }
+  // A win implies the character is unlocked; re-locking a character clears its win.
+  function setMine(g, on){ if(isStart(g)) return; if(on) MINE[g.n] = 1; else { delete MINE[g.n]; if(g.n in DANGER){ delete DANGER[g.n]; saveDanger(); } } saveMine(); }
+  function setDanger(g, d){ if(d<0) delete DANGER[g.n]; else { DANGER[g.n] = d; if(!isStart(g) && !MINE[g.n]){ MINE[g.n] = 1; saveMine(); } } saveDanger(); }
+  function unlockCount(){ return G.filter(hasChar).length; }
+  function d5Count(){ return G.filter(function(g){ return danger(g)===5; }).length; }
+  var LOCK = '<svg class="lock" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M4 7V5a4 4 0 0 1 8 0v2h1v8H3V7h1zm2 0h4V5a2 2 0 0 0-4 0v2z"/></svg>';
   function builds(g){ return B[g.n] || []; }
 
   var RARITY = window.ITEM_TIER || {}, RNAME = {1:"Tier I, common", 2:"Tier II, uncommon", 3:"Tier III, rare", 4:"Tier IV, legendary"};
@@ -519,7 +579,9 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       + '<div class="fgroup"><span class="flabel" id="lbl-pack">Content</span><div class="seg" role="group" aria-labelledby="lbl-pack">'
       + [["all","All"],["base","Base game"],["at","Abyssal Terrors"],["pd","Primal Dread"]].map(function(p){
           return '<button type="button" data-pack="'+p[0]+'" aria-pressed="'+(state.pack===p[0])+'">'+p[1]+'</button>'; }).join("")
-      + '</div></div></div><p id="status" class="sr-only" role="status" aria-live="polite"></p><div id="rows"></div><div id="iresults"></div>'
+      + '</div></div>'
+      + '<a class="plink" href="#progress">My progress <span>'+unlockCount()+'/'+G.length+' unlocked &middot; '+d5Count()+' D5</span></a>'
+      + '</div><p id="status" class="sr-only" role="status" aria-live="polite"></p><div id="rows"></div><div id="iresults"></div>'
       + '<section class="note"><h2>How this ranking was made</h2>'
       + '<p>There is no agreed Brotato tier list. Published lists disagree sharply (One Armed, Masochist, Cryptid and Doctor each appear at both ends), so this ranking is a blend of five published lists weighted toward consistency on Danger 5, plus judgment where they split. Read a tier as a rough band.</p>'
       + '<p>Characters marked EARLY are from Primal Dread, released November 2, 2026. Their ratings and builds rest on launch-week guides and are the least tested part of this site. Stats in guides are condensed from the wiki; check in-game tooltips for exact wording.</p>'
@@ -550,10 +612,14 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
     rows();
   }
 
+  // "D3"-style badge for the highest Danger won (filled for D5).
+  function dangerTag(g){ var d = danger(g); return d<0 ? '' : '<span class="tag dz'+(d===5?' d5':'')+'">D'+d+'<span class="sr-only"> won</span></span>'; }
+
   function rows(){
     var q = state.q.trim().toLowerCase();
     var filtering = !!q || state.pack!=="all" || state.type!=="all";
     var total = 0;
+    var tracking = tracked();  // untouched visitors see the plain list, no locks
     var out = TIERS.map(function(t){
       var list = G.filter(function(g){
         return g.t===t && (state.pack==="all"||g.p===state.pack) && (!q || g.n.toLowerCase().indexOf(q)>=0)
@@ -563,11 +629,13 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       if(!list.length) return "";
       var chips = list.map(function(g){
         var href = '#'+g.slug + (state.type!=="all" ? '/'+(firstOfType(g)+1) : '');
-        var ci = CICONS[g.n];
-        return '<a class="chip" href="'+href+'"><span class="rk">'+g.rank+'</span>'
+        var ci = CICONS[g.n], has = hasChar(g) || !tracking;
+        return '<a class="chip'+(has?'':' locked')+'" href="'+href+'"'+(has?'':' title="To unlock: '+esc(g.u)+'"')+'><span class="rk">'+g.rank+'</span>'
           + (ci ? '<img class="cico" src="img/chars/'+ci+'.png" alt="" width="44" height="44" decoding="async">' : '') + esc(g.n)
+          + (has ? '' : LOCK + '<span class="sr-only"> (locked)</span>')
           + (g.p!=="base" ? '<span class="tag">'+PTAG[g.p]+'</span>' : '')
-          + (g.early ? '<span class="tag early">EARLY</span>' : '') + '</a>';
+          + (g.early ? '<span class="tag early">EARLY</span>' : '')
+          + dangerTag(g) + '</a>';
       }).join("");
       return '<section class="tier" aria-label="Tier '+t+'"><div class="letter b'+t+'">'+t+'<small>'+TNOTE[t]+'</small></div><div class="chips">'+chips+'</div></section>';
     }).join("");
@@ -592,6 +660,106 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       ? (total ? total+(total===1?' character':' characters')+' shown'+where : 'No characters match')
         + (ires.n ? '. ' + ires.n + (ires.n===1?' item':' items') + ' match' + (ires.n===1?'es':'') : '')
       : '';
+  }
+
+  // My progress page (#progress): one checklist row per character, saved in this browser.
+  function renderProgress(){
+    var h = '<article class="progress">'
+      + '<nav class="crumbs"><a href="#tiers">&larr; Tier list</a></nav>'
+      + '<section class="hero"><h2 id="guide-title" tabindex="-1">My progress</h2>'
+      + '<p>Tick the characters you&rsquo;ve unlocked and the highest Danger you&rsquo;ve won with each. Saved in this browser only, so other people (and your other devices) keep their own.</p>'
+      + '<p class="pstats" id="pstats"></p></section>'
+      + '<div class="controls pcontrols">'
+      + '<div class="fgroup"><span class="flabel" id="lbl-pf">Show</span><div class="seg" role="group" aria-labelledby="lbl-pf">'
+      + [["all","All"],["locked","Locked"],["have","Unlocked"],["todo","D5 to do"]].map(function(p){
+          return '<button type="button" data-pf="'+p[0]+'" aria-pressed="'+(state.prog===p[0])+'">'+p[1]+'</button>'; }).join("")
+      + '</div></div>'
+      + '<div class="fgroup"><span class="flabel" id="lbl-bulk">Unlock all</span><div class="seg" role="group" aria-labelledby="lbl-bulk">'
+      + [["base","Base game"],["at","Abyssal Terrors"],["pd","Primal Dread"]].map(function(p){
+          return '<button type="button" data-bulk="'+p[0]+'">'+p[1]+'</button>'; }).join("")
+      + '</div></div>'
+      + '<button type="button" class="ubtn pclear" id="pclear">Clear all progress</button>'
+      + '</div><p id="pstatus" class="sr-only" role="status" aria-live="polite"></p><div id="plist"></div></article>';
+    app.innerHTML = h;
+    progressList(); progressStats();
+    app.querySelectorAll("[data-pf]").forEach(function(b){
+      b.addEventListener("click", function(){
+        state.prog = b.getAttribute("data-pf"); save();
+        app.querySelectorAll("[data-pf]").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+        progressList();
+      });
+    });
+    app.querySelectorAll("[data-bulk]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var p = b.getAttribute("data-bulk"), c = 0;
+        G.forEach(function(g){ if(g.p===p && !hasChar(g)){ MINE[g.n] = 1; c++; } });
+        saveMine(); progressList(); progressStats();
+        say("All " + PACK[p] + " characters marked unlocked (" + c + " newly).");
+      });
+    });
+    var pc = document.getElementById("pclear"), armed = null;
+    pc.addEventListener("click", function(){
+      if(!armed){
+        pc.textContent = "Click again to clear everything"; pc.classList.add("armed");
+        armed = setTimeout(function(){ armed = null; pc.textContent = "Clear all progress"; pc.classList.remove("armed"); }, 4000);
+        return;
+      }
+      clearTimeout(armed); armed = null; pc.textContent = "Clear all progress"; pc.classList.remove("armed");
+      MINE = {}; DANGER = {}; saveMine(); saveDanger(); progressList(); progressStats();
+      say("All progress cleared.");
+    });
+    var list = document.getElementById("plist");
+    list.addEventListener("change", function(e){
+      var cb = e.target.closest && e.target.closest("[data-unl]");
+      if(!cb) return;
+      var g = byName(cb.getAttribute("data-unl")); setMine(g, cb.checked);
+      syncRow(g); progressStats();
+      say(g.n + (cb.checked ? " unlocked." : " locked."));
+    });
+    list.addEventListener("click", function(e){
+      var b = e.target.closest && e.target.closest("[data-dz]");
+      if(!b) return;
+      var g = byName(b.closest("li").getAttribute("data-name")), d = +b.getAttribute("data-dz");
+      setDanger(g, danger(g)===d ? -1 : d);  // tapping the current value again clears it
+      syncRow(g); progressStats();
+      say(danger(g)<0 ? g.n + ": no Danger win marked." : g.n + ": highest Danger won is " + danger(g) + ".");
+    });
+  }
+  function byName(n){ return G.filter(function(x){ return x.n===n; })[0]; }
+  function say(t){ var s = document.getElementById("pstatus"); if(s) s.textContent = t; }
+  function progressStats(){
+    var el = document.getElementById("pstats"); if(!el) return;
+    el.innerHTML = '<strong>'+unlockCount()+' of '+G.length+'</strong> unlocked &middot; <strong>'+d5Count()+' of '+G.length+'</strong> won on Danger 5';
+  }
+  function progressList(){
+    var f = state.prog;
+    var list = G.filter(function(g){ return f==="locked" ? !hasChar(g) : f==="have" ? hasChar(g) : f==="todo" ? danger(g)<5 : true; });
+    var el = document.getElementById("plist");
+    if(!list.length){
+      el.innerHTML = '<div class="empty-all"><p>' + (f==="locked" ? 'You&rsquo;ve unlocked every character. Nice work.'
+        : f==="todo" ? 'You&rsquo;ve won Danger 5 with every character. Incredible.' : 'Nothing to show yet.') + '</p></div>';
+      return;
+    }
+    el.innerHTML = '<ol class="plist">' + list.map(function(g){ return '<li data-name="'+esc(g.n)+'">'+progressRow(g)+'</li>'; }).join("") + '</ol>';
+    list.forEach(syncRow);
+  }
+  function progressRow(g){
+    var ci = CICONS[g.n], id = 'u-'+g.slug;
+    return (ci ? '<img src="img/chars/'+ci+'.png" alt="" width="40" height="40" decoding="async">' : '<span></span>')
+      + '<div class="pname"><a href="#'+g.slug+'">'+esc(g.n)+'</a> <span class="pill b'+g.t+'">'+g.t+'</span>'
+      + (g.p!=="base" ? '<span class="tag">'+PTAG[g.p]+'</span>' : '') + '</div>'
+      + '<label class="punl" for="'+id+'"><input type="checkbox" id="'+id+'" data-unl="'+esc(g.n)+'"'+(isStart(g)?' disabled':'')+'> '+(isStart(g) ? 'Starter' : 'Unlocked')+'</label>'
+      + '<div class="dzrow" role="group" aria-label="Highest Danger won with '+esc(g.n)+'"><span class="dzl" aria-hidden="true">Danger won</span>'
+      + [0,1,2,3,4,5].map(function(d){ return '<button type="button" data-dz="'+d+'" aria-label="Danger '+d+'">'+d+'</button>'; }).join("") + '</div>'
+      + '<p class="preq"><span class="sr-only">How to unlock: </span>'+esc(g.u)+'</p>';
+  }
+  // Reflect one character's saved state in its row without rebuilding it, so focus stays put.
+  function syncRow(g){
+    var li = document.querySelector('#plist li[data-name="'+g.n.replace(/"/g,'\\"')+'"]'); if(!li) return;
+    var has = hasChar(g), d = danger(g);
+    li.classList.toggle("locked", !has);
+    li.querySelector("[data-unl]").checked = has;
+    li.querySelectorAll("[data-dz]").forEach(function(b){ b.setAttribute("aria-pressed", +b.getAttribute("data-dz")===d); });
   }
 
   // Search by item: which builds rank it where.
@@ -794,12 +962,18 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       + '<section class="hero"><div class="line">'
       + (CICONS[g.n] ? '<img class="hsprite" src="img/chars/'+CICONS[g.n]+'.png" alt="" width="64" height="64">' : '')
       + '<h2 id="guide-title" tabindex="-1">'+esc(g.n)+'</h2><span class="pill b'+g.t+'">'+g.t+' tier</span>'
-      + '<span class="tag">RANK '+g.rank+' OF '+G.length+'</span><span class="tag">'+PACK[g.p].toUpperCase()+'</span></div>'
+      + '<span class="tag">RANK '+g.rank+' OF '+G.length+'</span><span class="tag">'+PACK[g.p].toUpperCase()+'</span>' + dangerTag(g)
+      + (tracked() && !hasChar(g) ? '<aside class="lockcard" aria-label="Locked">'
+          + '<p class="lockhead">'+LOCK+' Locked</p><p><strong>To unlock:</strong> '+esc(g.u)+'</p>'
+          + '<p><a href="#progress">Mark it in My progress</a></p></aside>' : '')
+      + '</div>'
       + '<p>'+esc(g.why)+'</p></section>'
       + (g.early ? '<div class="flag"><strong>Early rating.</strong> Primal Dread launched November 2, 2026. This build comes from launch-week guides and the character&rsquo;s kit, not from long-tested runs.</div>' : '')
       + buildsSection(g, bi)
       + '<div class="grid2"><section class="card"><h3>Traits</h3><ul>'+g.traits.map(function(t){return '<li>'+turretMarks(esc(t))+'</li>';}).join("")+'</ul>'
-      + '<dl class="kv"><dt>Unlock</dt><dd>'+esc(g.u)+'</dd>'+(g.r?'<dt>Win reward</dt><dd>'+esc(g.r)+'</dd>':'')+'</dl></section>'
+      + '<dl class="kv"><dt>Unlock</dt><dd>'+esc(g.u)+'</dd>'+(g.r?'<dt>Win reward</dt><dd>'+esc(g.r)+'</dd>':'')
+      + '<dt>My progress</dt><dd>'+(hasChar(g) ? 'Unlocked' : tracked() ? 'Locked' : 'Not tracked yet')
+      + (danger(g)>=0 ? ', won on Danger '+danger(g) : '')+' &middot; <a href="#progress">Edit</a></dd></dl></section>'
       + '<section class="card"><h3>How to play</h3><p>'+esc(g.play)+'</p></section></div>'
       + '<section class="card"><h3>What to prioritize by wave</h3><div class="tablewrap"><table><thead><tr><th>Waves</th><th>Stats</th><th>Items</th></tr></thead><tbody>'
       + phase("1&ndash;6", g.e) + phase("7&ndash;12", g.m) + phase("13&ndash;20", g.l)
@@ -837,7 +1011,12 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
     var id = parts[0], bi = parts[1] ? parseInt(parts[1],10)-1 : 0;
     var g = G.filter(function(x){return x.slug===id;})[0];
     var onList = !!document.getElementById("rows");
-    if(g){
+    if(id==="progress"){
+      if(onList) listY = window.scrollY;
+      renderProgress();
+      document.title = "My progress · Brotato Character Guides";
+      if(!first) document.getElementById("guide-title").focus();
+    } else if(g){
       if(onList) listY = window.scrollY;  // remember where they were in the list
       renderGuide(g, bi);
       document.title = g.n + " build guide · Brotato Character Guides";
