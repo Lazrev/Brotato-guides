@@ -1123,17 +1123,21 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       return out;
     });
   }
+  function waveChips(s, items){ return '<span class="ilist">' + splitList(s).map(function(x){ return items ? itemChip(x) : '<span class="item">'+esc(x)+'</span>'; }).join("") + '</span>'; }
   function buildPanel(g, i){
     var b = builds(g)[i];
     if(!b) return '<p>No build data yet.</p>';
-    function row(label, w){ return '<tr><th scope="row">'+label+'</th><td data-label="Weapons">'+tierMarks(w)+'</td></tr>'; }
+    // One table per wave band: this build's weapons next to the character's stat and item priorities.
+    function row(label, w, p){ return '<tr><th scope="row">'+label+'</th><td data-label="Weapons">'+tierMarks(w)+'</td>'
+      + '<td data-label="Stats" class="witems wstats">'+waveChips(p[0])+'</td><td data-label="Items" class="witems">'+waveChips(p[1], true)+'</td></tr>'; }
     return '<div class="bhead"><h4>'+esc(b.n)+'</h4><span class="tag kind-'+b.k+'">'+KIND[b.k].toUpperCase()+'</span></div>'
       + '<p class="bstart"><span>Start with</span> <strong>'+weaponMarks(esc(b.s))+'</strong>'
       + (b.k==="x" ? '' : ' <span class="vnote">'+'&#10003; Starting option confirmed ('+(g.p==="base" ? 'Fextralife wiki' : g.p==="at" ? 'spellsandguns wiki' : 'fandom wiki')+')</span>')+'</p>'
       + '<p>'+tierMarks(b.x)+'</p>'
+      + '<h4 class="ithead">Wave by wave</h4>'
       + '<p class="rkey">Weapon upgrade tier: <span style="--c:var(--r1)">I</span><span style="--c:var(--r2)">II</span><span style="--c:var(--r3)">III</span><span style="--c:var(--r4)">IV</span></p>'
-      + '<div class="tablewrap"><table class="wtable"><thead><tr><th>Waves</th><th>Weapons</th></tr></thead><tbody>'
-      + row("1&ndash;6", b.w[0]) + row("7&ndash;12", b.w[1]) + row("13&ndash;20", b.w[2])
+      + '<div class="tablewrap"><table class="wtable"><thead><tr><th>Waves</th><th>Weapons</th><th>Stats</th><th>Items</th></tr></thead><tbody>'
+      + row("1&ndash;6", b.w[0], g.e) + row("7&ndash;12", b.w[1], g.m) + row("13&ndash;20", b.w[2], g.l)
       + '</tbody></table></div>'
       + itemTiers(g, i);
   }
@@ -1278,8 +1282,6 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
     var prev = G[g.rank-2], next = G[g.rank];
     var nb = builds(g).length;
     if(!(bi>=0 && bi<nb)) bi = 0;
-    function chips(s, items){ return '<span class="ilist">' + splitList(s).map(function(x){ return items ? itemChip(x) : '<span class="item">'+esc(x)+'</span>'; }).join("") + '</span>'; }
-    function phase(label, arr){ return '<tr><th scope="row">'+label+'</th><td data-label="Stats" class="witems wstats">'+chips(arr[0])+'</td><td data-label="Items" class="witems">'+chips(arr[1], true)+'</td></tr>'; }
     var h = '<article class="guide">'
       + '<nav class="crumbs"><a href="#tiers">&larr; Tier list</a><span>'
       + (prev ? '<a href="#'+prev.slug+'">&larr; #'+prev.rank+' '+esc(prev.n)+'</a>' : '')
@@ -1301,9 +1303,6 @@ tbody th{white-space:nowrap;font-family:var(--display);font-weight:400;font-size
       + '<dt>My progress</dt><dd>'+(hasChar(g) ? 'Unlocked' : tracked() ? 'Locked' : 'Not tracked yet')
       + (danger(g)>=0 ? ', won on Danger '+danger(g) : '')+' &middot; <a href="#progress">Edit</a></dd></dl></section>'
       + '<section class="card"><h3>How to play</h3><p>'+esc(g.play)+'</p></section></div>'
-      + '<section class="card"><h3>What to prioritize by wave</h3><div class="tablewrap"><table><thead><tr><th>Waves</th><th>Stats</th><th>Items</th></tr></thead><tbody>'
-      + phase("1&ndash;6", g.e) + phase("7&ndash;12", g.m) + phase("13&ndash;20", g.l)
-      + '</tbody></table></div></section>'
       + '<section class="card avoid"><h3>Avoid</h3><p>'+esc(g.avoid)+'</p></section>'
       + deepSection(g)
       + '<p class="sub">(AT) marks Abyssal Terrors items and (PD) Primal Dread items. Skip them if you don&rsquo;t own that DLC. Keyboard: Tab reaches each item list once; arrow keys move between its items.</p>'
